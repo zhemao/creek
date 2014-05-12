@@ -1,0 +1,7 @@
+*.cpp
+*.o
+*.h
+*.v
+*.vcd
+target/
+/RegisterSet
