@@ -108,10 +108,20 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     poke(c.io.scalar_writedata, readcount)
     step(1)
 
-    /*val readvals = (0 until readcount).map {
+    val readvals = (0 until readcount).map {
         i => writevals(1 + 2 * i)
     }
 
+    poke(c.io.reset, 1)
+    step(1)
+    poke(c.io.reset, 0)
+
     for (value <- readvals) {
-    }*/
+        step(1)
+        expect(c.io.busy, 1)
+        expect(c.io.vector_readdata, value)
+    }
+
+    step(1)
+    expect(c.io.busy, 0)
 }
