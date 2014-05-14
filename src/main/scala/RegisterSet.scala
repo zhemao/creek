@@ -9,8 +9,8 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
         val scalar_writedata = UInt(INPUT, addr_size)
         val scalar_write = Bool(INPUT)
         val reset = Bool(INPUT)
-        val vector_readdata = UInt(OUTPUT, bitwidth)
-        val vector_writedata = UInt(INPUT, bitwidth)
+        val vector_readdata = Bits(OUTPUT, bitwidth)
+        val vector_writedata = Bits(INPUT, bitwidth)
         val vector_write = Bool(INPUT)
         val busy = Bool(OUTPUT)
     }
@@ -32,7 +32,7 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
 
     io.busy := curcount != UInt(0)
 
-    val mem = Mem(UInt(width = bitwidth), depth, seqRead = true)
+    val mem = Mem(Bits(width = bitwidth), depth, seqRead = true)
 
     when (io.reset) {
         curcount := count
