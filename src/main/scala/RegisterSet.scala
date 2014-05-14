@@ -50,7 +50,7 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
 
 class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     val writestart = rnd.nextInt(10)
-    val writestep = rnd.nextInt(4) + 1
+    val writestep = rnd.nextInt(3) + 1
     val writecount = 20 + 2 * rnd.nextInt(10)
 
     val readstart = writestart + writestep
