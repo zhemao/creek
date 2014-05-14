@@ -32,7 +32,7 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
 
     io.busy := curcount != UInt(0)
 
-    val mem = Mem(UInt(width = bitwidth), depth)
+    val mem = Mem(UInt(width = bitwidth), depth, seqRead = true)
 
     when (io.reset) {
         curcount := count
