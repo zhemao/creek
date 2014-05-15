@@ -5,4 +5,4 @@
 	sbt "run $(notdir $(basename $<)) --compile --backend fpga"
 
 clean:
-	rm -f RegisterSet *.vcd *.v *.cpp *.o *.h
+	rm -f RegisterSet AdderUnit *.vcd *.v *.cpp *.o *.h

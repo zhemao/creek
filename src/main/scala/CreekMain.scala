@@ -10,6 +10,10 @@ object CreekMain {
                 () => Module(new RegisterSet(256, 32))) {
                     c => new RegisterSetTest(c)
                 }
+            case "AdderUnit" => chiselMainTest(testArgs,
+                () => Module(new AdderUnit(4, 256))) {
+                    c => new AdderUnitTest(c)
+                }
         }
     }
 }
