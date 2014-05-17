@@ -4,6 +4,7 @@ import Chisel._
 import ChiselFloat.FPAdd32
 
 import TestUtils.floatsToBigInt
+import ChiselFloat.FloatUtils.floatAdd
 
 class AdderUnit(val lanes: Int, val memdepth: Int) extends Module {
     val FloatSize = 32
@@ -84,7 +85,7 @@ class AdderUnitTest(c: AdderUnit) extends Tester(c) {
 
     val results = (avalues zip bvalues).map {
         pair => (pair._1 zip pair._2).map {
-            numpair => numpair._1 + numpair._2
+            numpair => floatAdd(numpair._1, numpair._2)
         }
     }
 
