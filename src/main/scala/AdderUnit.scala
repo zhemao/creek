@@ -138,8 +138,9 @@ class AdderUnitTest(c: AdderUnit) extends Tester(c) {
         expect(c.io.res_vreg_data, resbits(index))
     }
 
-    poke(c.io.res_vreg_busy, 0)
     step(1)
     expect(c.io.res_vreg_write, 0)
+    poke(c.io.res_vreg_busy, 0)
+    step(1)
     expect(c.io.busy, 0)
 }
