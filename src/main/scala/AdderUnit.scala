@@ -2,9 +2,7 @@ package Creek
 
 import Chisel._
 import ChiselFloat.FPAdd32
-
-import TestUtils.floatsToBigInt
-import ChiselFloat.FloatUtils.floatAdd
+import ChiselFloat.FloatUtils.{floatsToBigInt, floatAdd}
 
 class AdderUnit(val lanes: Int, val memdepth: Int) extends Module {
     val FloatSize = 32
