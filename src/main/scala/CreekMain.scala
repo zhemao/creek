@@ -14,6 +14,10 @@ object CreekMain {
                 () => Module(new AdderUnit(4, 256))) {
                     c => new AdderUnitTest(c)
                 }
+            case "MultiplierUnit" => chiselMainTest(testArgs,
+                () => Module(new MultiplierUnit(4, 256))) {
+                    c => new MultiplierUnitTest(c)
+                }
         }
     }
 }
