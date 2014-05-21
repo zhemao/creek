@@ -8,7 +8,8 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
         val scalar_writeaddr = UInt(INPUT, 2)
         val scalar_writedata = UInt(INPUT, addr_size)
         val scalar_write = Bool(INPUT)
-        val reset = Bool(INPUT)
+        val read_reset = Bool(INPUT)
+        val write_reset = Bool(INPUT)
         val vector_readdata = Bits(OUTPUT, bitwidth)
         val vector_writedata = Bits(INPUT, bitwidth)
         val vector_write = Bool(INPUT)
@@ -19,8 +20,12 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
     val step = Reg(UInt(width = addr_size))
     val count = Reg(UInt(width = addr_size))
 
-    val curaddr = Reg(UInt(width = addr_size))
-    val curcount = Reg(UInt(width = addr_size))
+    val readaddr = Reg(UInt(width = addr_size))
+    val readcount = Reg(UInt(width = addr_size))
+    val readstep = Reg(UInt(width = addr_size))
+    val writeaddr = Reg(UInt(width = addr_size))
+    val writecount = Reg(UInt(width = addr_size))
+    val writestep = Reg(UInt(width = addr_size))
 
     when (io.scalar_write) {
         switch (io.scalar_writeaddr) {
@@ -30,22 +35,30 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
         }
     }
 
-    io.busy := curcount != UInt(0)
+    io.busy := readcount != UInt(0) || writecount != UInt(0)
 
     val mem = Mem(Bits(width = bitwidth), depth, seqRead = true)
 
-    when (io.reset) {
-        curcount := count
-        curaddr := start
-    } .elsewhen (curcount != UInt(0)) {
-        curcount := curcount - UInt(1)
-        when (io.vector_write) {
-            mem(curaddr) := io.vector_writedata
-        }
-        curaddr := curaddr + step
+    when (io.read_reset) {
+        readcount := count
+        readaddr := start
+        readstep := step
+    } .elsewhen (readcount != UInt(0)) {
+        readcount := readcount - UInt(1)
+        readaddr := readaddr + readstep
     }
 
-    io.vector_readdata := mem(curaddr)
+    io.vector_readdata := mem(readaddr)
+
+    when (io.write_reset) {
+        writecount := count
+        writeaddr := start
+        writestep := step
+    } .elsewhen (writecount != UInt(0) && io.vector_write) {
+        mem(writeaddr) := io.vector_writedata
+        writeaddr := writeaddr + writestep
+        writecount := writecount - UInt(1)
+    }
 }
 
 class RegisterSetTest(c: RegisterSet) extends Tester(c) {
@@ -64,7 +77,8 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     poke(c.io.scalar_write, 1)
     poke(c.io.vector_writedata, 0)
     poke(c.io.vector_write, 0)
-    poke(c.io.reset, 0)
+    poke(c.io.read_reset, 0)
+    poke(c.io.write_reset, 0)
 
     poke(c.io.scalar_writeaddr, 0)
     poke(c.io.scalar_writedata, writestart)
@@ -79,11 +93,11 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     step(1)
 
     poke(c.io.scalar_write, 0)
-    poke(c.io.reset, 1)
+    poke(c.io.write_reset, 1)
     step(1)
 
     poke(c.io.vector_write, 1)
-    poke(c.io.reset, 0)
+    poke(c.io.write_reset, 0)
 
     for (value <- writevals) {
         poke(c.io.vector_writedata, value)
@@ -112,9 +126,9 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
         i => writevals(1 + 2 * i)
     }
 
-    poke(c.io.reset, 1)
+    poke(c.io.read_reset, 1)
     step(1)
-    poke(c.io.reset, 0)
+    poke(c.io.read_reset, 0)
 
     for (value <- readvals) {
         step(1)
