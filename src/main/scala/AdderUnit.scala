@@ -113,6 +113,8 @@ class AdderUnitTest(c: AdderUnit) extends Tester(c) {
         step(1)
 
         expect(c.io.busy, 1)
+        expect(c.io.a_vreg_reset, 0)
+        expect(c.io.b_vreg_reset, 0)
 
         if (i == 2) {
             expect(c.io.res_vreg_reset, 1)

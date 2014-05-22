@@ -109,6 +109,8 @@ class MultiplierUnitTest(c: MultiplierUnit) extends Tester(c) {
     expect(c.io.busy, 1)
     expect(c.io.res_vreg_reset, 1)
     expect(c.io.res_vreg_write, 0)
+    expect(c.io.a_vreg_reset, 0)
+    expect(c.io.b_vreg_reset, 0)
 
     for (i <- 1 until num_values) {
         poke(c.io.a_vreg_data, abits(i))
@@ -118,6 +120,8 @@ class MultiplierUnitTest(c: MultiplierUnit) extends Tester(c) {
         expect(c.io.busy, 1)
         expect(c.io.res_vreg_write, 1)
         expect(c.io.res_vreg_reset, 0)
+        expect(c.io.a_vreg_reset, 0)
+        expect(c.io.b_vreg_reset, 0)
         expect(c.io.res_vreg_data, resbits(i - 1))
     }
 
