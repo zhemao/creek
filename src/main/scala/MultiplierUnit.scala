@@ -2,7 +2,7 @@ package Creek
 
 import Chisel._
 import ChiselFloat.FPMult32
-import ChiselFloat.FloatUtils.floatsToBigInt
+import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
 
 class MultiplierUnit(val lanes: Int, val memdepth: Int) extends Module {
     val FloatSize = 32
@@ -135,6 +135,62 @@ class MultiplierUnitTest(c: MultiplierUnit) extends Tester(c) {
     step(1)
     expect(c.io.res_vreg_write, 1)
     expect(c.io.res_vreg_data, resbits(num_values - 1))
+
+    step(1)
+    expect(c.io.res_vreg_write, 0)
+    poke(c.io.res_vreg_busy, 0)
+    step(1)
+    expect(c.io.busy, 0)
+
+    val bscalar = rnd.nextFloat() * 10000.0f - 5000.0f
+    val results2 = avalues.map {
+        valueset => valueset.map {
+            value => value * bscalar
+        }
+    }
+
+    val bscalbits = floatToBigInt(bscalar)
+    val resbits2 = results2.map(floatsToBigInt)
+
+    poke(c.io.reset, 1)
+    poke(c.io.use_scalar, 1)
+    poke(c.io.a_vreg_data, 0)
+    poke(c.io.b_vreg_data, 0)
+    poke(c.io.b_scalar_data, bscalbits)
+    step(1)
+
+    expect(c.io.a_vreg_reset, 1)
+    expect(c.io.b_vreg_reset, 0)
+
+    poke(c.io.reset, 0)
+    poke(c.io.a_vreg_busy, 1)
+    poke(c.io.a_vreg_data, abits(0))
+    step(1)
+
+    expect(c.io.busy, 1)
+    expect(c.io.res_vreg_reset, 1)
+    expect(c.io.res_vreg_write, 0)
+    expect(c.io.a_vreg_reset, 0)
+    expect(c.io.b_vreg_reset, 0)
+
+    for (i <- 1 until num_values) {
+        poke(c.io.a_vreg_data, abits(i))
+        step(1)
+
+        expect(c.io.busy, 1)
+        expect(c.io.res_vreg_write, 1)
+        expect(c.io.res_vreg_reset, 0)
+        expect(c.io.a_vreg_reset, 0)
+        expect(c.io.b_vreg_reset, 0)
+        expect(c.io.res_vreg_data, resbits2(i - 1))
+    }
+
+    poke(c.io.a_vreg_busy, 0)
+    poke(c.io.b_vreg_busy, 0)
+
+    step(1)
+    expect(c.io.res_vreg_write, 1)
+    expect(c.io.res_vreg_data, resbits2(num_values - 1))
 
     step(1)
     expect(c.io.res_vreg_write, 0)
