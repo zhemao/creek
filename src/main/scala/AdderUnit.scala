@@ -4,34 +4,8 @@ import Chisel._
 import ChiselFloat.FPAdd32
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt, floatAdd}
 
-class AdderUnit(val lanes: Int, val memdepth: Int) extends Module {
-    val FloatSize = 32
-    val io = new Bundle {
-        val reset = Bool(INPUT)
-        val busy = Bool(OUTPUT)
-
-        val a_vreg_reset = Bool(OUTPUT)
-        val a_vreg_data = Bits(INPUT, FloatSize * lanes)
-        val a_vreg_busy = Bool(INPUT)
-        val a_vreg_read = Bool(OUTPUT)
-
-        val b_vreg_reset = Bool(OUTPUT)
-        val b_vreg_data = Bits(INPUT, FloatSize * lanes)
-        val b_vreg_busy = Bool(INPUT)
-        val b_scalar_data = Bits(INPUT, FloatSize)
-        val b_vreg_read = Bool(OUTPUT)
-        val use_scalar = Bool(INPUT)
-
-        val res_vreg_reset = Bool(OUTPUT)
-        val res_vreg_data = Bits(OUTPUT, FloatSize * lanes)
-        val res_vreg_write = Bool(OUTPUT)
-        val res_vreg_busy = Bool(INPUT)
-    }
-
-    io.a_vreg_reset := io.reset
-    io.b_vreg_reset := io.reset && !io.use_scalar
-    io.a_vreg_read := Bool(true)
-    io.b_vreg_read := !io.use_scalar
+class AdderUnit(lanes: Int, memdepth: Int)
+        extends ArithmeticUnit(lanes, memdepth) {
 
     val adder_latency = 3
 
@@ -42,24 +16,11 @@ class AdderUnit(val lanes: Int, val memdepth: Int) extends Module {
     val busy_shift = Reg(Bits(width = adder_latency - 1))
     busy_shift := Cat(busy_shift(adder_latency - 3, 0), io.a_vreg_busy)
 
-    val write_en = Reg(Bool())
-
     when (reset_shift(adder_latency - 1).toBool()) {
         write_en := Bool(true)
     } .elsewhen (!busy_shift(adder_latency - 2).toBool()) {
         write_en := Bool(false)
     }
-
-    io.res_vreg_write := write_en
-
-    io.busy := io.a_vreg_busy || io.res_vreg_busy || (io.b_vreg_busy && !io.use_scalar)
-
-    val b_scalar_reg = Reg(next = io.b_scalar_data)
-    val repeated_b_scalar = (1 until lanes).foldLeft(b_scalar_reg) {
-        (group, _) => Cat(group, b_scalar_reg)
-    }
-    val actual_b_value = Mux(io.use_scalar, repeated_b_scalar, io.b_vreg_data)
-    val results = Vec.fill(lanes) { UInt(width = FloatSize) }
 
     for (i <- 0 until lanes) {
         val adder = Module(new FPAdd32())
@@ -68,10 +29,6 @@ class AdderUnit(val lanes: Int, val memdepth: Int) extends Module {
         adder.io.a := io.a_vreg_data(start_pos, end_pos)
         adder.io.b := actual_b_value(start_pos, end_pos)
         results(i) := adder.io.res
-    }
-
-    io.res_vreg_data := (1 until lanes).foldLeft(results(0)) {
-        (group, i) => Cat(group, results(i))
     }
 }
 
