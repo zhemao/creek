@@ -13,11 +13,13 @@ class MultiplierUnit(val lanes: Int, val memdepth: Int) extends Module {
         val a_vreg_reset = Bool(OUTPUT)
         val a_vreg_data = Bits(INPUT, FloatSize * lanes)
         val a_vreg_busy = Bool(INPUT)
+        val a_vreg_read = Bool(OUTPUT)
 
         val b_vreg_reset = Bool(OUTPUT)
         val b_vreg_data = Bits(INPUT, FloatSize * lanes)
         val b_vreg_busy = Bool(INPUT)
         val b_scalar_data = Bits(INPUT, FloatSize)
+        val b_vreg_read = Bool(OUTPUT)
         val use_scalar = Bool(INPUT)
 
         val res_vreg_reset = Bool(OUTPUT)
@@ -28,6 +30,8 @@ class MultiplierUnit(val lanes: Int, val memdepth: Int) extends Module {
 
     io.a_vreg_reset := io.reset
     io.b_vreg_reset := io.reset && !io.use_scalar
+    io.a_vreg_read := Bool(true)
+    io.b_vreg_read := !io.use_scalar
 
     val reset_buffer = Reg(next = io.reset)
     io.res_vreg_reset := reset_buffer

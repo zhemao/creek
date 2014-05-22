@@ -13,6 +13,7 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
         val vector_readdata = Bits(OUTPUT, bitwidth)
         val vector_writedata = Bits(INPUT, bitwidth)
         val vector_write = Bool(INPUT)
+        val vector_read = Bool(INPUT)
         val busy = Bool(OUTPUT)
     }
 
@@ -43,7 +44,7 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
         readcount := count
         readaddr := start
         readstep := step
-    } .elsewhen (readcount != UInt(0)) {
+    } .elsewhen (readcount != UInt(0) && io.vector_read) {
         readcount := readcount - UInt(1)
         readaddr := readaddr + readstep
     }
@@ -129,6 +130,7 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     poke(c.io.read_reset, 1)
     step(1)
     poke(c.io.read_reset, 0)
+    poke(c.io.vector_read, 1)
 
     for (value <- readvals) {
         step(1)
@@ -136,6 +138,7 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
         expect(c.io.vector_readdata, value)
     }
 
+    poke(c.io.vector_read, 0)
     step(1)
     expect(c.io.busy, 0)
 }
