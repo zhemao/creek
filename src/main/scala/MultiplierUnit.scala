@@ -48,8 +48,9 @@ class MultiplierUnit(val lanes: Int, val memdepth: Int) extends Module {
     io.busy := io.a_vreg_busy || io.res_vreg_busy ||
             (io.b_vreg_busy && !io.use_scalar)
 
-    val repeated_b_scalar = (1 until lanes).foldLeft(io.b_scalar_data) {
-        (group, _) => Cat(group, io.b_scalar_data)
+    val b_scalar_reg = Reg(next = io.b_scalar_data)
+    val repeated_b_scalar = (1 until lanes).foldLeft(b_scalar_reg) {
+        (group, _) => Cat(group, b_scalar_reg)
     }
 
     val actual_b_value = Mux(io.use_scalar, repeated_b_scalar, io.b_vreg_data)
