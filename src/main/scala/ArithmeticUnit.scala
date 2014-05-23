@@ -11,13 +11,14 @@ class ArithmeticUnit(val lanes: Int, val memdepth: Int) extends Module {
         val a_vreg_reset = Bool(OUTPUT)
         val a_vreg_data = Bits(INPUT, FloatSize * lanes)
         val a_vreg_busy = Bool(INPUT)
+        val a_scalar_data = Bits(INPUT, FloatSize)
         val a_vreg_read = Bool(OUTPUT)
 
         val b_vreg_reset = Bool(OUTPUT)
         val b_vreg_data = Bits(INPUT, FloatSize * lanes)
         val b_vreg_busy = Bool(INPUT)
-        val b_scalar_data = Bits(INPUT, FloatSize)
         val b_vreg_read = Bool(OUTPUT)
+
         val use_scalar = Bool(INPUT)
 
         val res_vreg_reset = Bool(OUTPUT)
@@ -36,11 +37,11 @@ class ArithmeticUnit(val lanes: Int, val memdepth: Int) extends Module {
     io.busy := io.a_vreg_busy || io.res_vreg_busy ||
             (io.b_vreg_busy && !io.use_scalar)
 
-    val b_scalar_reg = Reg(next = io.b_scalar_data)
-    val repeated_b_scalar = (1 until lanes).foldLeft(b_scalar_reg) {
-        (group, _) => Cat(group, b_scalar_reg)
+    val scalar_reg = Reg(next = io.a_scalar_data)
+    val repeated_scalar = (1 until lanes).foldLeft(scalar_reg) {
+        (group, _) => Cat(group, scalar_reg)
     }
-    val actual_b_value = Mux(io.use_scalar, repeated_b_scalar, io.b_vreg_data)
+    val actual_b_value = Mux(io.use_scalar, repeated_scalar, io.b_vreg_data)
     val results = Vec.fill(lanes) { UInt(width = FloatSize) }
 
     io.res_vreg_data := (1 until lanes).foldLeft(results(0)) {

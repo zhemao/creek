@@ -108,21 +108,21 @@ class AdderUnitTest(c: AdderUnit) extends Tester(c) {
     step(1)
     expect(c.io.busy, 0)
 
-    val bscalar = rnd.nextFloat() * 10000.0f - 5000.0f
+    val ascalar = rnd.nextFloat() * 10000.0f - 5000.0f
     val results2 = avalues.map {
         valueset => valueset.map {
-            value => floatAdd(value, bscalar)
+            value => floatAdd(value, ascalar)
         }
     }
 
-    val bscalbits = floatToBigInt(bscalar)
+    val ascalbits = floatToBigInt(ascalar)
     val resbits2 = results2.map(floatsToBigInt)
 
     poke(c.io.reset, 1)
     poke(c.io.use_scalar, 1)
     poke(c.io.a_vreg_data, 0)
     poke(c.io.b_vreg_data, 0)
-    poke(c.io.b_scalar_data, bscalbits)
+    poke(c.io.a_scalar_data, ascalbits)
     step(1)
 
     expect(c.io.a_vreg_reset, 1)
