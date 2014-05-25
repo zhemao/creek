@@ -26,6 +26,8 @@ object CreekMain {
                 () => Module(new MultiplierSetup(4, 256))) {
                     c => new MultiplierSetupTest(c)
                 }
+            case "MemoryTest" => chiselMain(testArgs,
+                () => Module(new MemoryTest()))
         }
     }
 }
