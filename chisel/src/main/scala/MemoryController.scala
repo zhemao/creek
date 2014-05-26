@@ -21,6 +21,7 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
         val reg_write = Bool(OUTPUT)
         val reg_busy = Bool(INPUT)
 
+        val ready = Bool(OUTPUT)
         val start_read = Bool(INPUT)
         val start_write = Bool(INPUT)
         val start_addr = UInt(INPUT, addrsize)
@@ -52,6 +53,7 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
     io.reg_write_reset := (state === startRegWrite)
     io.reg_read := (state === readReg)
     io.reg_write := (state === writeReg)
+    io.ready := (state === ready)
 
     switch (state) {
         is(idle) {
