@@ -42,13 +42,13 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
 
     val (idle :: ready :: startRegWrite :: startMemRead :: waitMemRead ::
         checkReadData :: writeReg :: startRegRead :: readReg ::
-        startMemWrite :: waitMemWrite :: checkRegReadContinue :: Nil) =
-            Enum(UInt(), 12)
+        waitReadReg :: startMemWrite :: waitMemWrite ::
+        checkRegReadContinue :: Nil) = Enum(UInt(), 13)
 
     val state = Reg(init = idle)
 
     io.avl_read := (state === startMemRead) || (state === waitMemRead)
-    io.avl_write := (state === waitMemWrite)
+    io.avl_write := (state === waitMemWrite) || (state === startMemWrite)
     io.reg_read_reset := (state === startRegRead)
     io.reg_write_reset := (state === startRegWrite)
     io.reg_read := (state === readReg)
@@ -106,11 +106,14 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
             state := readReg
         }
         is (readReg) {
+            state := waitReadReg
+        }
+        is (waitReadReg) {
             state := startMemWrite
+            avl_writedata := io.reg_readdata
         }
         is (startMemWrite) {
             state := waitMemWrite
-            avl_writedata := io.reg_readdata
         }
         is (waitMemWrite) {
             when (io.avl_waitrequest_n) {
