@@ -54,6 +54,65 @@ class DummyRegister(numvalues: Int, datawidth: Int) extends Module {
     }
 }
 
+class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
+    val io = new Bundle {
+        val avl_waitrequest_n = Bool(OUTPUT)
+        val avl_address = UInt(INPUT, addrsize)
+        val avl_readdatavalid = Bool(OUTPUT)
+        val avl_readdata = UInt(OUTPUT, datawidth)
+        val avl_writedata = UInt(INPUT, datawidth)
+        val avl_read = Bool(INPUT)
+        val avl_write = Bool(INPUT)
+    }
+
+    val delay = 3
+
+    val delay_counter = Reg(init = UInt(delay, 2))
+
+    io.avl_waitrequest_n := delay_counter === UInt(0)
+
+    io.avl_readdatavalid := Bool(true)
+
+    val readdata = Reg(UInt(width = datawidth))
+    io.avl_readdata := readdata
+
+    val mem = Mem(UInt(width = datawidth), 1 << addrsize)
+    val (idle :: reading :: writing :: finishing :: Nil) = Enum(UInt(), 4)
+    val state = Reg(init = idle)
+
+    switch (state) {
+        is(idle) {
+            when (io.avl_read) {
+                state := reading
+                delay_counter := UInt(delay)
+            } .elsewhen (io.avl_write) {
+                state := writing
+                delay_counter := UInt(delay)
+            }
+        }
+        is (reading) {
+            when (delay_counter === UInt(0)) {
+                state := finishing
+                readdata := mem(io.avl_address)
+            } .otherwise {
+                delay_counter := delay_counter - UInt(1)
+            }
+        }
+        is (writing) {
+            when (delay_counter === UInt(0)) {
+                delay_counter := UInt(delay)
+                state := finishing
+                mem(io.avl_address) := io.avl_writedata
+            } .otherwise {
+                delay_counter := delay_counter - UInt(1)
+            }
+        }
+        is (finishing) {
+            state := idle
+        }
+    }
+}
+
 class MemoryTest extends Module {
     val AddrSize = 26
     val DataWidth = 128
@@ -61,26 +120,21 @@ class MemoryTest extends Module {
 
     val io = new Bundle {
         val local_init_done = Bool(INPUT)
-        val avl_waitrequest_n = Bool(INPUT)
-        val avl_address = UInt(OUTPUT, AddrSize)
-        val avl_readdatavalid = Bool(INPUT)
-        val avl_readdata = UInt(INPUT, DataWidth)
-        val avl_writedata = UInt(OUTPUT, DataWidth)
-        val avl_read = Bool(OUTPUT)
-        val avl_write = Bool(OUTPUT)
-
         val correct = Bits(OUTPUT, NumValues)
+        val done = Bool(OUTPUT)
     }
 
+    val dummymem = Module(new DummyMemory(AddrSize, DataWidth))
     val memctrl = Module(new MemoryController(AddrSize, DataWidth))
+
     memctrl.io.local_init_done := io.local_init_done
-    memctrl.io.avl_waitrequest_n := io.avl_waitrequest_n
-    io.avl_address := memctrl.io.avl_address
-    memctrl.io.avl_readdatavalid := io.avl_readdatavalid
-    memctrl.io.avl_readdata := io.avl_readdata
-    io.avl_writedata := memctrl.io.avl_writedata
-    io.avl_read := memctrl.io.avl_read
-    io.avl_write := memctrl.io.avl_write
+    memctrl.io.avl_waitrequest_n := dummymem.io.avl_waitrequest_n
+    dummymem.io.avl_address := memctrl.io.avl_address
+    memctrl.io.avl_readdatavalid := dummymem.io.avl_readdatavalid
+    memctrl.io.avl_readdata := dummymem.io.avl_readdata
+    dummymem.io.avl_writedata := memctrl.io.avl_writedata
+    dummymem.io.avl_read := memctrl.io.avl_read
+    dummymem.io.avl_write := memctrl.io.avl_write
     memctrl.io.start_addr := UInt(0)
     memctrl.io.addr_step := UInt(1)
     memctrl.io.transfer_count := UInt(NumValues)
@@ -102,24 +156,46 @@ class MemoryTest extends Module {
 
     memctrl.io.start_read := (state === begin_read)
     memctrl.io.start_write := (state === begin_write)
+    io.done := (state === finished)
+
+    val wait_counter = Reg(UInt(width = 2))
 
     switch (state) {
         is (initial) {
-            state := begin_write
+            when (memctrl.io.ready) {
+                state := begin_write
+            }
         }
         is (begin_write) {
             state := wait_write
+            wait_counter := UInt(3)
         }
         is (wait_write) {
-            when (!dummyreg.io.busy) {
+            when (wait_counter != UInt(0)) {
+                wait_counter := wait_counter - UInt(1)
+            } .elsewhen (memctrl.io.ready) {
                 state := begin_read
             }
         }
         is (begin_read) {
             state := wait_read
+            wait_counter := UInt(3)
         }
         is (wait_read) {
-            state := finished
+            when (wait_counter != UInt(0)) {
+                wait_counter := wait_counter - UInt(1)
+            } .elsewhen (!dummyreg.io.busy) {
+                state := finished
+            }
         }
     }
+}
+
+class MemoryTestTest(c: MemoryTest) extends Tester(c) {
+    poke(c.io.local_init_done, 0)
+    step(1)
+    poke(c.io.local_init_done, 1)
+    step(100)
+    expect(c.io.done, 1)
+    expect(c.io.correct, 15)
 }
