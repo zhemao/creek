@@ -7,7 +7,7 @@ object CreekMain {
         val testArgs = args.slice(1, args.length)
         args(0) match {
             case "RegisterSet" => chiselMainTest(testArgs,
-                () => Module(new RegisterSet(256, 32))) {
+                () => Module(new RegisterSet(256, 32, 16))) {
                     c => new RegisterSetTest(c)
                 }
             case "AdderUnit" => chiselMainTest(testArgs,

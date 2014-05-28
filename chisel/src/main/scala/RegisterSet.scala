@@ -2,26 +2,26 @@ package Creek
 
 import Chisel._
 
-class RegisterSet(depth: Int, bitwidth: Int) extends Module {
+class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
     val addr_size = log2Up(depth)
     val io = new Bundle {
         val scalar_writeaddr = UInt(INPUT, 2)
-        val scalar_writedata = UInt(INPUT, addr_size)
+        val scalar_writedata = UInt(INPUT, swidth)
         val scalar_write = Bool(INPUT)
-        val scalar_value = Bits(OUTPUT, bitwidth)
+        val scalar_value = Bits(OUTPUT, vwidth)
         val read_reset = Bool(INPUT)
         val write_reset = Bool(INPUT)
-        val vector_readdata = Bits(OUTPUT, bitwidth)
-        val vector_writedata = Bits(INPUT, bitwidth)
+        val vector_readdata = Bits(OUTPUT, vwidth)
+        val vector_writedata = Bits(INPUT, vwidth)
         val vector_write = Bool(INPUT)
         val vector_read = Bool(INPUT)
         val busy = Bool(OUTPUT)
     }
 
-    val start = Reg(UInt(width = addr_size))
-    val step = Reg(UInt(width = addr_size))
-    val count = Reg(UInt(width = addr_size))
-    val scalar = Reg(UInt(width = addr_size))
+    val start = Reg(UInt(width = swidth))
+    val step = Reg(UInt(width = swidth))
+    val count = Reg(UInt(width = swidth))
+    val scalar = Reg(UInt(width = swidth))
 
     io.scalar_value := scalar
 
@@ -43,12 +43,12 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
 
     io.busy := readcount != UInt(0) || writecount != UInt(0)
 
-    val mem = Mem(Bits(width = bitwidth), depth, seqRead = true)
+    val mem = Mem(Bits(width = vwidth), depth, seqRead = true)
 
     when (io.read_reset) {
-        readcount := count
-        readaddr := start
-        readstep := step
+        readcount := count(addr_size - 1, 0)
+        readaddr := start(addr_size - 1, 0)
+        readstep := step(addr_size - 1, 0)
     } .elsewhen (readcount != UInt(0) && io.vector_read) {
         readcount := readcount - UInt(1)
         readaddr := readaddr + readstep
@@ -57,9 +57,9 @@ class RegisterSet(depth: Int, bitwidth: Int) extends Module {
     io.vector_readdata := mem(readaddr)
 
     when (io.write_reset) {
-        writecount := count
-        writeaddr := start
-        writestep := step
+        writecount := count(addr_size - 1, 0)
+        writeaddr := start(addr_size - 1, 0)
+        writestep := step(addr_size - 1, 0)
     } .elsewhen (writecount != UInt(0) && io.vector_write) {
         mem(writeaddr) := io.vector_writedata
         writeaddr := writeaddr + writestep

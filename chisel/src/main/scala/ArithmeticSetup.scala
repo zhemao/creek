@@ -35,7 +35,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         val unit_busy = Bool(OUTPUT)
     }
 
-    val arset = Module(new RegisterSet(memdepth, lanes * FloatSize))
+    val arset = Module(new RegisterSet(memdepth, lanes * FloatSize, FloatSize))
     arset.io.scalar_writeaddr := io.a_scalar_addr
     arset.io.scalar_writedata := io.a_scalar_data
     arset.io.scalar_write := io.a_scalar_write
@@ -43,7 +43,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     arset.io.vector_writedata := io.a_vector_data
     arset.io.vector_write := io.a_vector_write
 
-    val brset = Module(new RegisterSet(memdepth, lanes * FloatSize))
+    val brset = Module(new RegisterSet(memdepth, lanes * FloatSize, FloatSize))
     brset.io.scalar_writeaddr := io.b_scalar_addr
     brset.io.scalar_writedata := io.b_scalar_data
     brset.io.scalar_write := io.b_scalar_write
@@ -51,7 +51,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     brset.io.vector_writedata := io.b_vector_data
     brset.io.vector_write := io.b_vector_write
 
-    val resrset = Module(new RegisterSet(memdepth, lanes * FloatSize))
+    val resrset = Module(new RegisterSet(memdepth, lanes * FloatSize, FloatSize))
     resrset.io.scalar_writeaddr := io.res_scalar_addr
     resrset.io.scalar_writedata := io.res_scalar_data
     resrset.io.scalar_write := io.res_scalar_write
