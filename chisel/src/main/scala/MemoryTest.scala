@@ -114,7 +114,7 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
 }
 
 class MemoryTest extends Module {
-    val AddrSize = 26
+    val AddrSize = 4
     val DataWidth = 128
     val NumValues = 4
 
