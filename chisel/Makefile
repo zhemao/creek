@@ -1,5 +1,9 @@
 UNITS = RegisterSet AdderUnit MultiplierUnit AdderSetup MultiplierSetup MemoryTest
 
+test-all: $(addsuffix .vcd, $(UNITS))
+
+fpga: $(addsuffix .v, $(UNITS))
+
 %.vcd: src/main/scala/%.scala
 	sbt "run $(notdir $(basename $<)) --genHarness --compile --test --vcd --backend c"
 
