@@ -28,10 +28,10 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
         // need to reverse otherwise endianness will be swapped
     }.reverse)
 
-    val start = Reg(UInt(width = swidth))
-    val step = Reg(UInt(width = swidth))
-    val count = Reg(UInt(width = swidth))
-    val scalar = Reg(UInt(width = swidth))
+    val start = Reg(init = UInt(0, swidth))
+    val step = Reg(init = UInt(1, swidth))
+    val count = Reg(init = UInt(depth, swidth))
+    val scalar = Reg(init = UInt(0, swidth))
 
     io.scalar_value := scalar
 
