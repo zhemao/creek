@@ -30,6 +30,10 @@ object CreekMain {
                 () => Module(new MemoryTest())) {
                     c => new MemoryTestTest(c)
                 }
+            case "MemoryControllerRegisters" => chiselMainTest(testArgs,
+                () => Module(new MemoryControllerRegisters(16))) {
+                    c => new MemoryControllerRegistersTest(c)
+                }
         }
     }
 }
