@@ -1,14 +1,18 @@
 package Creek
 
 import Chisel._
+import scala.math.ceil
 
 class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
     val addr_size = log2Up(depth)
+    val sbytes = ceil(swidth / 8.0).toInt
+
     val io = new Bundle {
         val scalar_writeaddr = UInt(INPUT, 2)
         val scalar_writedata = UInt(INPUT, swidth)
         val scalar_write = Bool(INPUT)
-        val scalar_value = Bits(OUTPUT, vwidth)
+        val scalar_byteenable = Bits(INPUT, sbytes)
+        val scalar_value = Bits(OUTPUT, swidth)
         val read_reset = Bool(INPUT)
         val write_reset = Bool(INPUT)
         val copy_reset = Bool(INPUT)
@@ -18,6 +22,11 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
         val vector_read = Bool(INPUT)
         val busy = Bool(OUTPUT)
     }
+
+    val bitmask = Cat((0 until sbytes).map {
+        i => Fill(8, io.scalar_byteenable(i))
+        // need to reverse otherwise endianness will be swapped
+    }.reverse)
 
     val start = Reg(UInt(width = swidth))
     val step = Reg(UInt(width = swidth))
@@ -34,12 +43,20 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
     val writecount = Reg(UInt(width = addr_size))
     val writestep = Reg(UInt(width = addr_size))
 
+    val oldvalue = MuxCase(UInt(0, swidth),
+        (io.scalar_writeaddr === UInt(0), start) ::
+        (io.scalar_writeaddr === UInt(1), step)  ::
+        (io.scalar_writeaddr === UInt(2), count) ::
+        (io.scalar_writeaddr === UInt(3), scalar) :: Nil)
+
+    val writevalue = (oldvalue & ~bitmask) | (io.scalar_writedata & bitmask)
+
     when (io.scalar_write) {
         switch (io.scalar_writeaddr) {
-            is(UInt(0)) { start := io.scalar_writedata }
-            is(UInt(1)) { step  := io.scalar_writedata }
-            is(UInt(2)) { count := io.scalar_writedata }
-            is(UInt(3)) { scalar := io.scalar_writedata }
+            is(UInt(0)) { start := writevalue }
+            is(UInt(1)) { step  := writevalue }
+            is(UInt(2)) { count := writevalue }
+            is(UInt(3)) { scalar := writevalue }
         }
     }
 
@@ -99,6 +116,7 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     poke(c.io.vector_write, 0)
     poke(c.io.read_reset, 0)
     poke(c.io.write_reset, 0)
+    poke(c.io.scalar_byteenable, 3)
 
     poke(c.io.scalar_writeaddr, 0)
     poke(c.io.scalar_writedata, writestart)
@@ -143,6 +161,19 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     step(1)
 
     poke(c.io.scalar_writeaddr, 3)
+    poke(c.io.scalar_writedata, 0)
+    step(1)
+
+    poke(c.io.scalar_byteenable, 2)
+    poke(c.io.scalar_writedata, scalar_value)
+    step(1)
+
+    poke(c.io.scalar_write, 0)
+    step(1)
+    expect(c.io.scalar_value, scalar_value & 0xff00)
+
+    poke(c.io.scalar_write, 1)
+    poke(c.io.scalar_byteenable, 1)
     poke(c.io.scalar_writedata, scalar_value)
     step(1)
 
