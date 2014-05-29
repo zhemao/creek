@@ -5,7 +5,7 @@ test-all: $(addsuffix .vcd, $(UNITS))
 fpga: $(addsuffix .v, $(UNITS))
 
 %.vcd: src/main/scala/%.scala
-	sbt "run $(notdir $(basename $<)) --genHarness --compile --test --vcd --backend c"
+	sbt "run $(notdir $(basename $<)) --debug --genHarness --compile --test --vcd --backend c"
 
 %.v: src/main/scala/%.scala
 	sbt "run $(notdir $(basename $<)) --compile --backend fpga"
