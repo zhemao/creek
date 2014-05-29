@@ -38,7 +38,7 @@ class ArithmeticUnit(val lanes: Int, val memdepth: Int) extends Module {
             (io.b_vreg_busy && !io.use_scalar)
 
     val scalar_reg = Reg(next = io.a_scalar_data)
-    val repeated_scalar = Cat((0 until lanes).map { _ => scalar_reg })
+    val repeated_scalar = Fill(lanes, scalar_reg)
     val actual_b_value = Mux(io.use_scalar, repeated_scalar, io.b_vreg_data)
     val results = Vec.fill(lanes) { UInt(width = FloatSize) }
 
