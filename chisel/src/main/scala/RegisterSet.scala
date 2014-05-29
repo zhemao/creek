@@ -11,6 +11,7 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
         val scalar_value = Bits(OUTPUT, vwidth)
         val read_reset = Bool(INPUT)
         val write_reset = Bool(INPUT)
+        val copy_reset = Bool(INPUT)
         val vector_readdata = Bits(OUTPUT, vwidth)
         val vector_writedata = Bits(INPUT, vwidth)
         val vector_write = Bool(INPUT)
@@ -25,6 +26,7 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
 
     io.scalar_value := scalar
 
+    val copy_scalar = Reg(UInt(width = swidth))
     val readaddr = Reg(UInt(width = addr_size))
     val readcount = Reg(UInt(width = addr_size))
     val readstep = Reg(UInt(width = addr_size))
@@ -56,12 +58,23 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
 
     io.vector_readdata := mem(readaddr)
 
-    when (io.write_reset) {
+    val copying = Reg(Bool())
+    val writedata = Mux(copying,
+        Fill(vwidth / swidth, copy_scalar), io.vector_writedata)
+
+    when (io.copy_reset) {
         writecount := count(addr_size - 1, 0)
         writeaddr := start(addr_size - 1, 0)
         writestep := step(addr_size - 1, 0)
-    } .elsewhen (writecount != UInt(0) && io.vector_write) {
-        mem(writeaddr) := io.vector_writedata
+        copying := Bool(true)
+        copy_scalar := scalar
+    } .elsewhen (io.write_reset) {
+        writecount := count(addr_size - 1, 0)
+        writeaddr := start(addr_size - 1, 0)
+        writestep := step(addr_size - 1, 0)
+        copying := Bool(false)
+    } .elsewhen (writecount != UInt(0) && (io.vector_write || copying)) {
+        mem(writeaddr) := writedata
         writeaddr := writeaddr + writestep
         writecount := writecount - UInt(1)
     }
@@ -151,6 +164,31 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
         step(1)
         expect(c.io.busy, 1)
         expect(c.io.vector_readdata, value)
+    }
+
+    poke(c.io.vector_read, 0)
+    step(1)
+    expect(c.io.busy, 0)
+
+    poke(c.io.copy_reset, 1)
+    step(1)
+    poke(c.io.copy_reset, 0)
+    step(1)
+    expect(c.io.busy, 1)
+    step(writecount + 1)
+    expect(c.io.busy, 0)
+
+    poke(c.io.read_reset, 1)
+    step(1)
+    poke(c.io.read_reset, 0)
+    poke(c.io.vector_read, 1)
+
+    val repeated_scalar = (scalar_value.toLong << 16) | scalar_value.toLong
+
+    for (i <- 0 until readcount) {
+        step(1)
+        expect(c.io.busy, 1)
+        expect(c.io.vector_readdata, repeated_scalar)
     }
 
     poke(c.io.vector_read, 0)
