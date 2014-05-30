@@ -22,7 +22,9 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         val b_write_reset = Bool(INPUT)
         val b_vector_data = UInt(INPUT, lanes * FloatSize)
         val b_vector_write = Bool(INPUT)
-        val b_use_scalar = Bool(INPUT)
+
+        val use_scalar = Bool(INPUT)
+        val double_a = Bool(INPUT)
 
         val res_scalar_addr = UInt(INPUT, 2)
         val res_scalar_data = UInt(INPUT, AddrSize)
@@ -42,6 +44,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     arset.io.write_reset := io.a_write_reset
     arset.io.vector_writedata := io.a_vector_data
     arset.io.vector_write := io.a_vector_write
+    arset.io.scalar_byteenable := Fill(lanes, UInt(1, 1))
 
     val brset = Module(new RegisterSet(memdepth, lanes * FloatSize, FloatSize))
     brset.io.scalar_writeaddr := io.b_scalar_addr
@@ -50,6 +53,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     brset.io.write_reset := io.b_write_reset
     brset.io.vector_writedata := io.b_vector_data
     brset.io.vector_write := io.b_vector_write
+    brset.io.scalar_byteenable := Fill(lanes, UInt(1, 1))
 
     val resrset = Module(new RegisterSet(memdepth, lanes * FloatSize, FloatSize))
     resrset.io.scalar_writeaddr := io.res_scalar_addr
@@ -58,6 +62,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     resrset.io.read_reset := io.res_read_reset
     resrset.io.vector_read := io.res_vector_read
     io.res_vector_data := resrset.io.vector_readdata
+    resrset.io.scalar_byteenable := Fill(lanes, UInt(1, 1))
 
     def connectUnit(unit: ArithmeticUnit) {
         unit.io.reset := io.unit_reset
@@ -71,7 +76,8 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         unit.io.b_vreg_busy := brset.io.busy
         brset.io.vector_read := unit.io.b_vreg_read
         unit.io.a_scalar_data := io.a_scalar_val
-        unit.io.use_scalar := io.b_use_scalar
+        unit.io.double_a := io.double_a
+        unit.io.use_scalar := io.use_scalar
         resrset.io.write_reset := unit.io.res_vreg_reset
         resrset.io.vector_writedata := unit.io.res_vreg_data
         resrset.io.vector_write := unit.io.res_vreg_write
@@ -94,6 +100,8 @@ class ArithmeticSetupTest[T <: ArithmeticSetup](c: T, f: (Float, Float) => Float
     poke(c.io.b_scalar_write, 0)
     poke(c.io.res_scalar_write, 0)
     poke(c.io.unit_reset, 0)
+    poke(c.io.use_scalar, 0)
+    poke(c.io.double_a, 0)
 
     val num_values = 20
     val scalar_value = rnd.nextFloat() * 10000.0f - 5000.0f
