@@ -48,6 +48,7 @@ class MultiplierUnitTest(c: MultiplierUnit) extends Tester(c) {
 
     poke(c.io.reset, 1)
     poke(c.io.use_scalar, 0)
+    poke(c.io.double_a, 0)
     poke(c.io.a_vreg_busy, 0)
     poke(c.io.b_vreg_busy, 0)
     poke(c.io.res_vreg_busy, 0)
@@ -147,6 +148,49 @@ class MultiplierUnitTest(c: MultiplierUnit) extends Tester(c) {
     step(1)
     expect(c.io.res_vreg_write, 1)
     expect(c.io.res_vreg_data, resbits2(num_values - 1))
+
+    step(1)
+    expect(c.io.res_vreg_write, 0)
+    poke(c.io.res_vreg_busy, 0)
+    step(1)
+    expect(c.io.busy, 0)
+
+    val results3 = avalues.map {
+        valueset => valueset.map {
+            value => value * value
+        }
+    }
+    val resbits3 = results3.map(floatsToBigInt)
+
+    poke(c.io.reset, 1)
+    poke(c.io.use_scalar, 0)
+    poke(c.io.double_a, 1)
+    poke(c.io.a_vreg_busy, 1)
+    poke(c.io.a_vreg_data, 0)
+    step(1)
+
+    expect(c.io.a_vreg_reset, 1)
+    expect(c.io.b_vreg_reset, 0)
+    expect(c.io.a_vreg_read, 1)
+    expect(c.io.b_vreg_read, 0)
+
+    poke(c.io.reset, 0)
+    poke(c.io.a_vreg_busy, 1)
+    poke(c.io.a_vreg_data, abits(0))
+    step(1)
+
+    for (i <- 1 until num_values) {
+        poke(c.io.a_vreg_data, abits(i))
+        step(1)
+
+        expect(c.io.res_vreg_write, 1)
+        expect(c.io.res_vreg_data, resbits3(i - 1))
+    }
+
+    poke(c.io.a_vreg_busy, 0)
+    step(1)
+    expect(c.io.res_vreg_write, 1)
+    expect(c.io.res_vreg_data, resbits3(num_values - 1))
 
     step(1)
     expect(c.io.res_vreg_write, 0)
