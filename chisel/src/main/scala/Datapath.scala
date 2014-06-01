@@ -25,7 +25,8 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         val input_select = Vec.fill(5) { UInt(INPUT, log2Up(nregs)) }
         val output_select = Vec.fill(3) { UInt(INPUT, log2Up(nregs)) }
 
-        val reg_busy = Vec.fill(nregs) { Bool(OUTPUT) }
+        val reg_read_busy = Vec.fill(nregs) { Bool(OUTPUT) }
+        val reg_write_busy = Vec.fill(nregs) { Bool(OUTPUT) }
         val adder_busy = Bool(OUTPUT)
         val mult_busy = Bool(OUTPUT)
 
@@ -59,7 +60,7 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         val ubo = new UnitBackwardOutput(lanes)
 
         ufi.vector_readdata := reg.io.vector_readdata
-        ufi.busy := reg.io.busy
+        ufi.busy := reg.io.read_busy
         ufi.scalar_value := reg.io.scalar_value
         in_switch.io.fw_left(i) := ufi.toBits
 
@@ -67,14 +68,16 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         reg.io.read_reset := ubi.read_reset
         reg.io.vector_read := ubi.vector_read
 
-        out_switch.io.fw_left(i) := reg.io.busy
+        out_switch.io.fw_left(i) := reg.io.write_busy
 
         ubo.fromBits(out_switch.io.bw_left(i))
         reg.io.write_reset := ubo.write_reset
         reg.io.vector_writedata := ubo.vector_writedata
         reg.io.vector_write := ubo.vector_write
 
-        io.reg_busy(i) := reg.io.busy
+        io.reg_read_busy(i) := reg.io.read_busy
+        io.reg_write_busy(i) := reg.io.write_busy
+
         reg.io.scalar_writeaddr := scalar_regaddr
         reg.io.scalar_writedata := io.scalar_writedata
         reg.io.scalar_write := io.scalar_write && (scalar_regsel === UInt(i))

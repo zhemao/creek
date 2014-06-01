@@ -20,7 +20,8 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
         val vector_writedata = Bits(INPUT, vwidth)
         val vector_write = Bool(INPUT)
         val vector_read = Bool(INPUT)
-        val busy = Bool(OUTPUT)
+        val read_busy = Bool(OUTPUT)
+        val write_busy = Bool(OUTPUT)
     }
 
     val bitmask = Cat((0 until sbytes).map {
@@ -60,7 +61,8 @@ class RegisterSet(depth: Int, vwidth: Int, swidth: Int) extends Module {
         }
     }
 
-    io.busy := readcount != UInt(0) || writecount != UInt(0)
+    io.read_busy := readcount != UInt(0)
+    io.write_busy := writecount != UInt(0)
 
     val mem = Mem(Bits(width = vwidth), depth, seqRead = true)
 
@@ -140,12 +142,12 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
     for (value <- writevals) {
         poke(c.io.vector_writedata, value)
         step(1)
-        expect(c.io.busy, 1)
+        expect(c.io.write_busy, 1)
     }
 
     poke(c.io.vector_write, 0)
     step(1)
-    expect(c.io.busy, 0)
+    expect(c.io.write_busy, 0)
 
     poke(c.io.scalar_write, 1)
     poke(c.io.scalar_writeaddr, 0)
@@ -193,21 +195,21 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
 
     for (value <- readvals) {
         step(1)
-        expect(c.io.busy, 1)
+        expect(c.io.read_busy, 1)
         expect(c.io.vector_readdata, value)
     }
 
     poke(c.io.vector_read, 0)
     step(1)
-    expect(c.io.busy, 0)
+    expect(c.io.read_busy, 0)
 
     poke(c.io.copy_reset, 1)
     step(1)
     poke(c.io.copy_reset, 0)
     step(1)
-    expect(c.io.busy, 1)
+    expect(c.io.write_busy, 1)
     step(writecount + 1)
-    expect(c.io.busy, 0)
+    expect(c.io.write_busy, 0)
 
     poke(c.io.read_reset, 1)
     step(1)
@@ -218,11 +220,11 @@ class RegisterSetTest(c: RegisterSet) extends Tester(c) {
 
     for (i <- 0 until readcount) {
         step(1)
-        expect(c.io.busy, 1)
+        expect(c.io.read_busy, 1)
         expect(c.io.vector_readdata, repeated_scalar)
     }
 
     poke(c.io.vector_read, 0)
     step(1)
-    expect(c.io.busy, 0)
+    expect(c.io.read_busy, 0)
 }

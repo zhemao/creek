@@ -69,11 +69,11 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         io.unit_busy := unit.io.busy
         arset.io.read_reset := unit.io.a_vreg_reset
         unit.io.a_vreg_data := arset.io.vector_readdata
-        unit.io.a_vreg_busy := arset.io.busy
+        unit.io.a_vreg_busy := arset.io.read_busy
         arset.io.vector_read := unit.io.a_vreg_read
         brset.io.read_reset := unit.io.b_vreg_reset
         unit.io.b_vreg_data := brset.io.vector_readdata
-        unit.io.b_vreg_busy := brset.io.busy
+        unit.io.b_vreg_busy := brset.io.read_busy
         brset.io.vector_read := unit.io.b_vreg_read
         unit.io.a_scalar_data := io.a_scalar_val
         unit.io.double_a := io.double_a
@@ -81,7 +81,7 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         resrset.io.write_reset := unit.io.res_vreg_reset
         resrset.io.vector_writedata := unit.io.res_vreg_data
         resrset.io.vector_write := unit.io.res_vreg_write
-        unit.io.res_vreg_busy := resrset.io.busy
+        unit.io.res_vreg_busy := resrset.io.write_busy
     }
 }
 
