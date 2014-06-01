@@ -27,8 +27,16 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
 
         val reg_read_busy = Vec.fill(nregs) { Bool(OUTPUT) }
         val reg_write_busy = Vec.fill(nregs) { Bool(OUTPUT) }
+
+        val adder_reset = Bool(INPUT)
         val adder_busy = Bool(OUTPUT)
+        val adder_use_scalar = Bool(INPUT)
+        val adder_double_a = Bool(INPUT)
+
+        val mult_reset = Bool(INPUT)
         val mult_busy = Bool(OUTPUT)
+        val mult_use_scalar = Bool(INPUT)
+        val mult_double_a = Bool(INPUT)
 
         val mem_ready = Bool(OUTPUT)
         val mem_start_read = Bool(INPUT)
@@ -116,15 +124,20 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     }
 
     val adder = Module(new AdderUnit(lanes))
-    val multiplier = Module(new MultiplierUnit(lanes))
-    val memctrl = Module(new MemoryController(memaddrsize, VectorWidth))
-
+    adder.io.reset := io.adder_reset
     io.adder_busy := adder.io.busy
-    io.mult_busy := multiplier.io.busy
-
+    adder.io.use_scalar := io.adder_use_scalar
+    adder.io.double_a := io.adder_double_a
     connectArithmeticUnit(adder, 0, 1, 0)
+
+    val multiplier = Module(new MultiplierUnit(lanes))
+    multiplier.io.reset := io.mult_reset
+    io.mult_busy := multiplier.io.busy
+    multiplier.io.use_scalar := io.mult_use_scalar
+    multiplier.io.double_a := io.mult_double_a
     connectArithmeticUnit(multiplier, 2, 3, 1)
 
+    val memctrl = Module(new MemoryController(memaddrsize, VectorWidth))
     val mem_ufi = new UnitForwardInput(lanes)
     val mem_ubi = new UnitBackwardInput(lanes)
     val mem_ubo = new UnitBackwardOutput(lanes)
