@@ -1,20 +1,42 @@
 package Creek
 
 import Chisel._
-import ChiselCrossbar.CrossbarSwitch
+import ChiselCrossbar._
 import Creek.Constants.FloatSize
 
 class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         extends Module {
+
+    // +1 because of memory controller registers
+    val ScalarAddrSize = log2Up(nregs + 1) + 2
+    val ScalarWidth = FloatSize
+    val VectorWidth = FloatSize * lanes
+
     val io = new Bundle {
         val local_init_done = Bool(INPUT)
         val avl_waitrequest_n = Bool(INPUT)
-        val avl_address = UInt(OUTPUT, addrsize)
+        val avl_address = UInt(OUTPUT, memaddrsize)
         val avl_readdatavalid = Bool(INPUT)
-        val avl_readdata = UInt(INPUT, datawidth)
-        val avl_writedata = UInt(OUTPUT, datawidth)
+        val avl_readdata = UInt(INPUT, VectorWidth)
+        val avl_writedata = UInt(OUTPUT, VectorWidth)
         val avl_read = Bool(OUTPUT)
         val avl_write = Bool(OUTPUT)
+
+        val input_select = Vec.fill(5) { UInt(INPUT, log2Up(nregs)) }
+        val output_select = Vec.fill(3) { UInt(INPUT, log2Up(nregs)) }
+
+        val reg_busy = Vec.fill(nregs) { Bool(OUTPUT) }
+        val adder_busy = Bool(OUTPUT)
+        val mult_busy = Bool(OUTPUT)
+
+        val mem_ready = Bool(OUTPUT)
+        val mem_start_read = Bool(INPUT)
+        val mem_start_write = Bool(INPUT)
+
+        val scalar_address = UInt(INPUT, ScalarAddrSize)
+        val scalar_writedata = UInt(INPUT, ScalarWidth)
+        val scalar_byteenable = UInt(INPUT, ScalarWidth / 8)
+        val scalar_write = Bool(INPUT)
     }
 
     val input_fwidth = new UnitForwardInput(lanes).getWidth
@@ -27,8 +49,11 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     val out_switch = Module(new CrossbarSwitch(
         output_fwidth, output_bwidth, nregs, 3))
 
+    val scalar_regsel = io.scalar_address(ScalarAddrSize - 1, 2)
+    val scalar_regaddr = io.scalar_address(1, 0)
+
     for (i <- 0 until nregs) {
-        val reg = new RegisterSet(regdepth, FloatSize * lanes, FloatSize)
+        val reg = new RegisterSet(regdepth, VectorWidth, ScalarWidth)
         val ufi = new UnitForwardInput(lanes)
         val ubi = new UnitBackwardInput(lanes)
         val ubo = new UnitBackwardOutput(lanes)
@@ -42,12 +67,18 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         reg.io.read_reset := ubi.read_reset
         reg.io.vector_read := ubi.vector_read
 
-        in_switch.io.fw_left(i) := reg.io.busy
+        out_switch.io.fw_left(i) := reg.io.busy
 
         ubo.fromBits(out_switch.io.bw_left(i))
         reg.io.write_reset := ubo.write_reset
         reg.io.vector_writedata := ubo.vector_writedata
         reg.io.vector_write := ubo.vector_write
+
+        io.reg_busy(i) := reg.io.busy
+        reg.io.scalar_writeaddr := scalar_regaddr
+        reg.io.scalar_writedata := io.scalar_writedata
+        reg.io.scalar_write := io.scalar_write && (scalar_regsel === UInt(i))
+        reg.io.scalar_byteenable := io.scalar_byteenable
     }
 
     def connectArithmeticUnit(unit: ArithmeticUnit, ai: Int, bi: Int, ri: Int) {
@@ -83,8 +114,11 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
 
     val adder = Module(new AdderUnit(lanes))
     val multiplier = Module(new MultiplierUnit(lanes))
-    val memctrl = Module(new MemoryController(memaddrsize, FloatSize * lanes))
-    
+    val memctrl = Module(new MemoryController(memaddrsize, VectorWidth))
+
+    io.adder_busy := adder.io.busy
+    io.mult_busy := multiplier.io.busy
+
     connectArithmeticUnit(adder, 0, 1, 0)
     connectArithmeticUnit(multiplier, 2, 3, 1)
 
@@ -105,6 +139,18 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     mem_ubo.write_reset := memctrl.io.reg_write_reset
     out_switch.io.bw_bottom(2) := mem_ubo.toBits
 
+    memctrl.io.start_read := io.mem_start_read
+    memctrl.io.start_write := io.mem_start_write
+
+    val memctrl_reg = Module(new MemoryControllerRegisters(ScalarWidth))
+    memctrl.io.start_addr := memctrl_reg.io.start
+    memctrl.io.addr_step := memctrl_reg.io.step
+    memctrl.io.transfer_count := memctrl_reg.io.count
+    memctrl_reg.io.writeaddr := scalar_regaddr
+    memctrl_reg.io.writedata := io.scalar_writedata
+    memctrl_reg.io.write := io.scalar_write && (scalar_regsel === UInt(nregs))
+    memctrl_reg.io.byteenable := io.scalar_byteenable
+
     memctrl.io.local_init_done := io.local_init_done
     memctrl.io.avl_waitrequest_n := io.avl_waitrequest_n
     memctrl.io.avl_readdatavalid := io.avl_readdatavalid
@@ -114,4 +160,6 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     io.avl_writedata := memctrl.io.avl_writedata
     io.avl_read := memctrl.io.avl_read
     io.avl_write := memctrl.io.avl_write
+
+    io.mem_ready := memctrl.io.ready
 }
