@@ -2,10 +2,10 @@ package Creek
 
 import Chisel._
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
+import Creek.Constants.FloatSize
 
 class ArithmeticSetup(val lanes: Int, val memdepth: Int)
         extends Module {
-    val FloatSize = 32
     val AddrSize = log2Up(memdepth)
     val io = new Bundle {
         val a_scalar_addr = UInt(INPUT, 2)

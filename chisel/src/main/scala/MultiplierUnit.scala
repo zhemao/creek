@@ -3,6 +3,7 @@ package Creek
 import Chisel._
 import ChiselFloat.FPMult32
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
+import Creek.Constants.FloatSize
 
 class MultiplierUnit(lanes: Int, memdepth: Int)
         extends ArithmeticUnit(lanes, memdepth) {
