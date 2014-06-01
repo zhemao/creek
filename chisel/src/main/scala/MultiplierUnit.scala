@@ -5,8 +5,8 @@ import ChiselFloat.FPMult32
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
 import Creek.Constants.FloatSize
 
-class MultiplierUnit(lanes: Int, memdepth: Int)
-        extends ArithmeticUnit(lanes, memdepth) {
+class MultiplierUnit(lanes: Int)
+        extends ArithmeticUnit(lanes) {
     val reset_buffer = Reg(next = io.reset)
     io.res_vreg_reset := reset_buffer
 

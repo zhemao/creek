@@ -4,7 +4,7 @@ import Chisel._
 
 class MultiplierSetup(lanes: Int, memdepth: Int)
         extends ArithmeticSetup(lanes, memdepth) {
-    val unit = Module(new MultiplierUnit(lanes, memdepth))
+    val unit = Module(new MultiplierUnit(lanes))
     connectUnit(unit)
 }
 

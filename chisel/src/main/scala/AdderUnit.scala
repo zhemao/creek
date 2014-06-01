@@ -5,8 +5,8 @@ import ChiselFloat.FPAdd32
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt, floatAdd}
 import Creek.Constants.FloatSize
 
-class AdderUnit(lanes: Int, memdepth: Int)
-        extends ArithmeticUnit(lanes, memdepth) {
+class AdderUnit(lanes: Int)
+        extends ArithmeticUnit(lanes) {
 
     val adder_latency = 3
 

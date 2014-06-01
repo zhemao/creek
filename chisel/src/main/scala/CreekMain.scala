@@ -11,11 +11,11 @@ object CreekMain {
                     c => new RegisterSetTest(c)
                 }
             case "AdderUnit" => chiselMainTest(testArgs,
-                () => Module(new AdderUnit(4, 256))) {
+                () => Module(new AdderUnit(4))) {
                     c => new AdderUnitTest(c)
                 }
             case "MultiplierUnit" => chiselMainTest(testArgs,
-                () => Module(new MultiplierUnit(4, 256))) {
+                () => Module(new MultiplierUnit(4))) {
                     c => new MultiplierUnitTest(c)
                 }
             case "AdderSetup" => chiselMainTest(testArgs,

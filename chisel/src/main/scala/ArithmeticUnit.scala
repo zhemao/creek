@@ -3,7 +3,7 @@ package Creek
 import Chisel._
 import Creek.Constants.FloatSize
 
-class ArithmeticUnit(val lanes: Int, val memdepth: Int) extends Module {
+class ArithmeticUnit(val lanes: Int) extends Module {
     val io = new Bundle {
         val reset = Bool(INPUT)
         val busy = Bool(OUTPUT)
