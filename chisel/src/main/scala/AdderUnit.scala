@@ -9,16 +9,14 @@ class AdderUnit(lanes: Int, memdepth: Int)
 
     val adder_latency = 3
 
-    val reset_shift = Reg(Bits(width = adder_latency))
-    reset_shift := Cat(reset_shift(adder_latency - 2, 0), io.reset)
-    io.res_vreg_reset := reset_shift(adder_latency - 1)
+    val reset_shifted = ShiftRegister(io.reset, adder_latency)
+    val busy_shifted = ShiftRegister(io.a_vreg_busy, adder_latency - 1)
 
-    val busy_shift = Reg(Bits(width = adder_latency - 1))
-    busy_shift := Cat(busy_shift(adder_latency - 3, 0), io.a_vreg_busy)
+    io.res_vreg_reset := reset_shifted
 
-    when (reset_shift(adder_latency - 1).toBool()) {
+    when (reset_shifted) {
         write_en := Bool(true)
-    } .elsewhen (!busy_shift(adder_latency - 2).toBool()) {
+    } .elsewhen (!busy_shifted) {
         write_en := Bool(false)
     }
 

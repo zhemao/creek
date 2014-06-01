@@ -29,21 +29,31 @@ class ArithmeticUnit(val lanes: Int, val memdepth: Int) extends Module {
     }
 
     val using_b = !io.use_scalar && !io.double_a
+    val use_scalar_sync = Reg(Bool())
+    val double_a_sync = Reg(Bool())
+    val using_b_sync = !use_scalar_sync && !double_a_sync
+
+    val scalar_reg = Reg(UInt(width = FloatSize))
+    val repeated_scalar = Fill(lanes, scalar_reg)
+    val actual_b_value = Mux(io.use_scalar, repeated_scalar,
+        Mux(io.double_a, io.a_vreg_data, io.b_vreg_data))
+
+    when (io.reset) {
+        use_scalar_sync := io.use_scalar
+        double_a_sync := io.double_a
+        scalar_reg := io.a_scalar_data
+    }
 
     io.a_vreg_reset := io.reset
     io.b_vreg_reset := io.reset && using_b
     io.a_vreg_read := Bool(true)
-    io.b_vreg_read := using_b
+    io.b_vreg_read := using_b_sync
 
     val write_en = Reg(Bool())
     io.res_vreg_write := write_en
     io.busy := io.a_vreg_busy || io.res_vreg_busy ||
-            (io.b_vreg_busy && using_b)
+            (io.b_vreg_busy && using_b_sync)
 
-    val scalar_reg = Reg(next = io.a_scalar_data)
-    val repeated_scalar = Fill(lanes, scalar_reg)
-    val actual_b_value = Mux(io.use_scalar, repeated_scalar,
-        Mux(io.double_a, io.a_vreg_data, io.b_vreg_data))
     val results = Vec.fill(lanes) { UInt(width = FloatSize) }
 
     io.res_vreg_data := Cat(results.toSeq)
