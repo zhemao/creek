@@ -5,7 +5,7 @@ import ChiselCrossbar._
 import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
 import Creek.Constants.FloatSize
 
-class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
+class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
         extends Module {
 
     // +1 because of memory controller registers
@@ -190,4 +190,61 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     io.avl_write := memctrl.io.avl_write
 
     io.mem_ready := memctrl.io.ready
+}
+
+class DatapathTest(c: Datapath) extends Tester(c) {
+    def ceilDiv(n: Int, d: Int) = (n - 1) / d + 1
+
+    def writeValuesToRegister(regnum: Int, values: Array[Float]) {
+        val numwords = ceilDiv(values.length, c.lanes)
+        val words = new Array[BigInt](numwords)
+        for (i <- 0 until numwords) {
+            val float_group = values.slice(i * c.lanes, (i + 1) * c.lanes)
+            words(i) = floatsToBigInt(float_group)
+        }
+        val memcount_addr = 2
+
+        poke(c.io.scalar_address, memcount_addr)
+        poke(c.io.scalar_writedata, numwords)
+        poke(c.io.scalar_byteenable, 0xf)
+        poke(c.io.scalar_write, 1)
+        step(1)
+        poke(c.io.scalar_write, 0)
+        step(1)
+
+        val input_select = Array[BigInt](0, 0, 0, 0, regnum)
+        val output_select = Array[BigInt](0, 0, regnum)
+
+        poke(c.io.input_select(4), regnum)
+        poke(c.io.output_select(2), regnum)
+        poke(c.io.avl_waitrequest_n, 0)
+        poke(c.io.avl_readdatavalid, 1)
+        poke(c.io.mem_start_read, 1)
+        step(1)
+        poke(c.io.mem_start_read, 0)
+        step(3)
+
+        for (i <- 0 until numwords) {
+            expect(c.io.avl_read, 1)
+            expect(c.io.avl_address, i)
+            poke(c.io.avl_readdata, words(i))
+            poke(c.io.avl_waitrequest_n, 1)
+            step(1)
+            poke(c.io.avl_waitrequest_n, 0)
+            step(3)
+        }
+        expect(c.io.avl_read, 0)
+        expect(c.io.mem_ready, 1)
+    }
+
+    poke(c.io.local_init_done, 1)
+    poke(c.io.input_select, Array.fill(5){ BigInt(0) })
+    poke(c.io.output_select, Array.fill(3){ BigInt(0) })
+    step(1)
+
+    val avalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
+    val bvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
+
+    writeValuesToRegister(1, avalues)
+    writeValuesToRegister(2, bvalues)
 }

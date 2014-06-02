@@ -34,6 +34,10 @@ object CreekMain {
                 () => Module(new MemoryControllerRegisters(16))) {
                     c => new MemoryControllerRegistersTest(c)
                 }
+            case "Datapath" => chiselMainTest(testArgs,
+                () => Module(new Datapath(4, 256, 7, 16))) {
+                    c => new DatapathTest(c)
+                }
         }
     }
 }

@@ -11,3 +11,4 @@ target/
 /MultiplierSetup
 /MemoryTest
 /MemoryControllerRegisters
+/Datapath
