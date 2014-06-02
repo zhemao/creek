@@ -240,6 +240,46 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         expect(c.io.mem_ready, 1)
     }
 
+    def runMultiplication(areg: Int, breg: Int, resreg: Int, numwords: Int) {
+        val count_offset = 2
+        val scalar_shift = 2
+
+        poke(c.io.scalar_address, (areg << scalar_shift) | count_offset)
+        poke(c.io.scalar_writedata, numwords)
+        poke(c.io.scalar_byteenable, 0xf)
+        poke(c.io.scalar_write, 1)
+        step(1)
+
+        poke(c.io.scalar_address, (breg << scalar_shift) | count_offset)
+        step(1)
+
+        poke(c.io.scalar_address, (resreg << scalar_shift) | count_offset)
+        step(1)
+
+        poke(c.io.scalar_write, 0)
+        step(1)
+
+        poke(c.io.input_select(2), areg)
+        poke(c.io.input_select(3), breg)
+        poke(c.io.output_select(1), resreg)
+        poke(c.io.mult_use_scalar, 0)
+        poke(c.io.mult_square, 0)
+        step(1)
+
+        poke(c.io.mult_reset, 1)
+        step(1)
+        poke(c.io.mult_reset, 0)
+        step(1)
+
+        expect(c.io.mult_busy, 1)
+        expect(c.io.reg_read_busy(areg), 1)
+        expect(c.io.reg_read_busy(breg), 1)
+        step(1)
+        expect(c.io.reg_write_busy(resreg), 1)
+        step(numwords)
+        expect(c.io.mult_busy, 0)
+    }
+
     poke(c.io.local_init_done, 1)
     poke(c.io.input_select, Array.fill(5){ BigInt(0) })
     poke(c.io.output_select, Array.fill(3){ BigInt(0) })
@@ -250,4 +290,6 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
     writeValuesToRegister(1, avalues)
     writeValuesToRegister(2, bvalues)
+
+    runMultiplication(1, 2, 3, 16 / c.lanes)
 }
