@@ -2,13 +2,15 @@ package Creek
 
 import Chisel._
 import ChiselCrossbar._
+import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
 import Creek.Constants.FloatSize
 
 class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         extends Module {
 
     // +1 because of memory controller registers
-    val ScalarAddrSize = log2Up(nregs + 1) + 2
+    val RealNRegs = nregs + 1
+    val ScalarAddrSize = log2Up(RealNRegs) + 2
     val ScalarWidth = FloatSize
     val VectorWidth = FloatSize * lanes
 
@@ -22,12 +24,12 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         val avl_read = Bool(OUTPUT)
         val avl_write = Bool(OUTPUT)
 
-        val input_select = Vec.fill(5) { UInt(INPUT, log2Up(nregs)) }
-        val output_select = Vec.fill(3) { UInt(INPUT, log2Up(nregs)) }
+        val input_select = Vec.fill(5) { UInt(INPUT, log2Up(RealNRegs)) }
+        val output_select = Vec.fill(3) { UInt(INPUT, log2Up(RealNRegs)) }
 
-        val reg_read_busy = Vec.fill(nregs) { Bool(OUTPUT) }
-        val reg_write_busy = Vec.fill(nregs) { Bool(OUTPUT) }
-        val reg_copy_reset = Vec.fill(nregs) { Bool(INPUT) }
+        val reg_read_busy = Vec.fill(RealNRegs) { Bool(OUTPUT) }
+        val reg_write_busy = Vec.fill(RealNRegs) { Bool(OUTPUT) }
+        val reg_copy_reset = Vec.fill(RealNRegs) { Bool(INPUT) }
 
         val adder_reset = Bool(INPUT)
         val adder_busy = Bool(OUTPUT)
@@ -54,14 +56,23 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     val output_bwidth = new UnitBackwardOutput(lanes).getWidth
 
     val in_switch = Module(new CrossbarSwitch(
-        input_fwidth, input_bwidth, nregs, 5))
+        input_fwidth, input_bwidth, RealNRegs, 5))
     val out_switch = Module(new CrossbarSwitch(
-        output_fwidth, output_bwidth, nregs, 3))
+        output_fwidth, output_bwidth, RealNRegs, 3))
 
     val scalar_regsel = io.scalar_address(ScalarAddrSize - 1, 2)
     val scalar_regaddr = io.scalar_address(1, 0)
 
-    for (i <- 0 until nregs) {
+    in_switch.io.fw_left(0) := Bits(0)
+    out_switch.io.fw_left(0) := Bits(0)
+
+    io.reg_read_busy := Bool(false)
+    io.reg_write_busy := Bool(false)
+
+    // The user-accessible registers start from 1
+    // Register 0 is reserved for the zero vector register
+    // memory control registers
+    for (i <- 1 to nregs) {
         val reg = new RegisterSet(regdepth, VectorWidth, ScalarWidth)
         val ufi = new UnitForwardInput(lanes)
         val ubi = new UnitBackwardInput(lanes)
@@ -165,7 +176,7 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     memctrl.io.transfer_count := memctrl_reg.io.count
     memctrl_reg.io.writeaddr := scalar_regaddr
     memctrl_reg.io.writedata := io.scalar_writedata
-    memctrl_reg.io.write := io.scalar_write && (scalar_regsel === UInt(nregs))
+    memctrl_reg.io.write := io.scalar_write && (scalar_regsel === UInt(0))
     memctrl_reg.io.byteenable := io.scalar_byteenable
 
     memctrl.io.local_init_done := io.local_init_done
