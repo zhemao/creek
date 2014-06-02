@@ -27,6 +27,7 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
 
         val reg_read_busy = Vec.fill(nregs) { Bool(OUTPUT) }
         val reg_write_busy = Vec.fill(nregs) { Bool(OUTPUT) }
+        val reg_copy_reset = Vec.fill(nregs) { Bool(INPUT) }
 
         val adder_reset = Bool(INPUT)
         val adder_busy = Bool(OUTPUT)
@@ -66,6 +67,8 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
         val ufi = new UnitForwardInput(lanes)
         val ubi = new UnitBackwardInput(lanes)
         val ubo = new UnitBackwardOutput(lanes)
+
+        reg.io.copy_reset := io.reg_copy_reset(i)
 
         ufi.vector_readdata := reg.io.vector_readdata
         ufi.busy := reg.io.read_busy
