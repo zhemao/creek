@@ -60,6 +60,9 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     val out_switch = Module(new CrossbarSwitch(
         output_fwidth, output_bwidth, RealNRegs, 3))
 
+    in_switch.io.select := io.input_select
+    out_switch.io.select := io.output_select
+
     val scalar_regsel = io.scalar_address(ScalarAddrSize - 1, 2)
     val scalar_regaddr = io.scalar_address(1, 0)
 
