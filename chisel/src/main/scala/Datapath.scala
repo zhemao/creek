@@ -73,7 +73,7 @@ class Datapath(lanes: Int, regdepth: Int, nregs: Int, memaddrsize: Int)
     // Register 0 is reserved for the zero vector register
     // memory control registers
     for (i <- 1 to nregs) {
-        val reg = new RegisterSet(regdepth, VectorWidth, ScalarWidth)
+        val reg = Module(new RegisterSet(regdepth, VectorWidth, ScalarWidth))
         val ufi = new UnitForwardInput(lanes)
         val ubi = new UnitBackwardInput(lanes)
         val ubo = new UnitBackwardOutput(lanes)
