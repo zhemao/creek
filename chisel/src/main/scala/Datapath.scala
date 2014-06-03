@@ -197,17 +197,22 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 
 class DatapathTest(c: Datapath) extends Tester(c) {
 
-    def writeValuesToRegister(regnum: Int, values: Array[Float]) {
+    def floatsToWords(values: Array[Float]) = {
         val numwords = values.length / c.lanes
         val words = new Array[BigInt](numwords)
         for (i <- 0 until numwords) {
             val float_group = values.slice(i * c.lanes, (i + 1) * c.lanes)
             words(i) = floatsToBigInt(float_group)
         }
+        words
+    }
+
+    def writeValuesToRegister(regnum: Int, values: Array[Float]) {
+        val words = floatsToWords(values)
         val memcount_addr = 2
 
         poke(c.io.scalar_address, memcount_addr)
-        poke(c.io.scalar_writedata, numwords)
+        poke(c.io.scalar_writedata, words.length)
         poke(c.io.scalar_byteenable, 0xf)
         poke(c.io.scalar_write, 1)
         step(1)
@@ -226,7 +231,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         poke(c.io.mem_start_read, 0)
         step(3)
 
-        for (i <- 0 until numwords) {
+        for (i <- 0 until words.length) {
             expect(c.io.avl_read, 1)
             expect(c.io.avl_address, i)
             poke(c.io.avl_readdata, words(i))
