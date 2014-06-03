@@ -79,7 +79,9 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
         val reg = Module(new RegisterSet(regdepth, VectorWidth, ScalarWidth))
         val ufi = new UnitForwardInput(lanes)
         val ubi = new UnitBackwardInput(lanes)
+            .fromBits(in_switch.io.bw_left(i))
         val ubo = new UnitBackwardOutput(lanes)
+            .fromBits(out_switch.io.bw_left(i))
 
         reg.io.copy_reset := io.reg_copy_reset(i)
 
@@ -88,13 +90,11 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
         ufi.scalar_value := reg.io.scalar_value
         in_switch.io.fw_left(i) := ufi.toBits
 
-        ubi.fromBits(in_switch.io.bw_left(i))
         reg.io.read_reset := ubi.read_reset
         reg.io.vector_read := ubi.vector_read
 
         out_switch.io.fw_left(i) := reg.io.write_busy
 
-        ubo.fromBits(out_switch.io.bw_left(i))
         reg.io.write_reset := ubo.write_reset
         reg.io.vector_writedata := ubo.vector_writedata
         reg.io.vector_write := ubo.vector_write
@@ -110,12 +110,13 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 
     def connectArithmeticUnit(unit: ArithmeticUnit, ai: Int, bi: Int, ri: Int) {
         val a_ufi = new UnitForwardInput(lanes)
+            .fromBits(in_switch.io.fw_bottom(ai))
         val a_ubi = new UnitBackwardInput(lanes)
         val b_ufi = new UnitForwardInput(lanes)
+            .fromBits(in_switch.io.fw_bottom(bi))
         val b_ubi = new UnitBackwardInput(lanes)
         val res_ubo = new UnitBackwardOutput(lanes)
 
-        a_ufi.fromBits(in_switch.io.fw_bottom(ai))
         unit.io.a_vreg_data := a_ufi.vector_readdata
         unit.io.a_vreg_busy := a_ufi.busy
         unit.io.a_scalar_data := a_ufi.scalar_value
@@ -124,7 +125,6 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
         a_ubi.vector_read := unit.io.a_vreg_read
         in_switch.io.bw_bottom(ai) := a_ubi.toBits
 
-        b_ufi.fromBits(in_switch.io.fw_bottom(bi))
         unit.io.b_vreg_data := b_ufi.vector_readdata
         unit.io.b_vreg_busy := b_ufi.busy
 
@@ -154,10 +154,10 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 
     val memctrl = Module(new MemoryController(memaddrsize, VectorWidth))
     val mem_ufi = new UnitForwardInput(lanes)
+        .fromBits(in_switch.io.fw_bottom(4))
     val mem_ubi = new UnitBackwardInput(lanes)
     val mem_ubo = new UnitBackwardOutput(lanes)
 
-    mem_ufi.fromBits(in_switch.io.fw_bottom(4))
     memctrl.io.reg_readdata := mem_ufi.vector_readdata
     memctrl.io.reg_busy := mem_ufi.busy
 
