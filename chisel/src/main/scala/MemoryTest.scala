@@ -24,8 +24,7 @@ class DummyRegister(numvalues: Int, datawidth: Int) extends Module {
         UInt(rnd.nextInt(), datawidth)
     }
 
-    val readdata = Reg(UInt(width = datawidth))
-    io.readdata := readdata
+    io.readdata := reference(address)
 
     val correct = Reg(init = UInt(0, numvalues))
     io.correct := correct
@@ -37,7 +36,6 @@ class DummyRegister(numvalues: Int, datawidth: Int) extends Module {
         address := UInt(0)
         busy := Bool(true)
     } .elsewhen (io.read) {
-        readdata := reference(address)
         when (address === UInt(numvalues - 1)) {
             busy := Bool(false)
         } .otherwise {
