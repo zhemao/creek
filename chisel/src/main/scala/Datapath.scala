@@ -210,17 +210,17 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     def writeValuesToRegister(regnum: Int, values: Array[Float]) {
         val words = floatsToWords(values)
         val memcount_addr = 2
+        val regcount_addr = (regnum << 2) | memcount_addr
 
         poke(c.io.scalar_address, memcount_addr)
         poke(c.io.scalar_writedata, words.length)
         poke(c.io.scalar_byteenable, 0xf)
         poke(c.io.scalar_write, 1)
         step(1)
+        poke(c.io.scalar_address, regcount_addr)
+        step(1)
         poke(c.io.scalar_write, 0)
         step(1)
-
-        val input_select = Array[BigInt](0, 0, 0, 0, regnum)
-        val output_select = Array[BigInt](0, 0, regnum)
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
@@ -241,6 +241,47 @@ class DatapathTest(c: Datapath) extends Tester(c) {
             step(3)
         }
         expect(c.io.avl_read, 0)
+        expect(c.io.mem_ready, 1)
+    }
+
+    def checkValuesInRegister(regnum: Int, values: Array[Float]) {
+        val words = floatsToWords(values)
+        val memcount_addr = 2
+        val regcount_addr = (regnum << 2) | memcount_addr
+
+        poke(c.io.scalar_address, memcount_addr)
+        poke(c.io.scalar_writedata, words.length)
+        poke(c.io.scalar_byteenable, 0xf)
+        poke(c.io.scalar_write, 1)
+        step(1)
+        poke(c.io.scalar_address, regcount_addr)
+        step(1)
+        poke(c.io.scalar_write, 0)
+        step(1)
+
+        expect(c.io.mem_ready, 1)
+
+        poke(c.io.input_select(4), regnum)
+        poke(c.io.output_select(2), regnum)
+        poke(c.io.avl_waitrequest_n, 0)
+        poke(c.io.avl_readdatavalid, 1)
+        poke(c.io.mem_start_write, 1)
+        step(1)
+        poke(c.io.mem_start_write, 0)
+        step(3)
+
+        for (i <- 0 until words.length) {
+            expect(c.io.mem_ready, 0)
+            expect(c.io.avl_write, 1)
+            expect(c.io.avl_address, i)
+            expect(c.io.avl_writedata, words(i))
+            poke(c.io.avl_waitrequest_n, 1)
+            step(1)
+            poke(c.io.avl_waitrequest_n, 0)
+            step(3)
+        }
+
+        expect(c.io.avl_write, 0)
         expect(c.io.mem_ready, 1)
     }
 
@@ -291,9 +332,11 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
     val avalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
     val bvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
+    val resvalues = (avalues zip bvalues).map { pair => pair._1 * pair._2 }
 
     writeValuesToRegister(1, avalues)
     writeValuesToRegister(2, bvalues)
 
     runMultiplication(1, 2, 3, 16 / c.lanes)
+    checkValuesInRegister(3, resvalues)
 }
