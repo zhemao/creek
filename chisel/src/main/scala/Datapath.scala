@@ -196,10 +196,9 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 }
 
 class DatapathTest(c: Datapath) extends Tester(c) {
-    def ceilDiv(n: Int, d: Int) = (n - 1) / d + 1
 
     def writeValuesToRegister(regnum: Int, values: Array[Float]) {
-        val numwords = ceilDiv(values.length, c.lanes)
+        val numwords = values.length / c.lanes
         val words = new Array[BigInt](numwords)
         for (i <- 0 until numwords) {
             val float_group = values.slice(i * c.lanes, (i + 1) * c.lanes)
