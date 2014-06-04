@@ -207,7 +207,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         words
     }
 
-    def setRegisterValue(regnum: Int, scalar_addr: Int, value: Int) {
+    def setRegisterValue(regnum: Int, scalar_addr: Int, value: BigInt) {
         val full_addr = (regnum << 2) | scalar_addr
 
         poke(c.io.scalar_address, full_addr)
