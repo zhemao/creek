@@ -282,7 +282,8 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         expect(c.io.mem_ready, 1)
     }
 
-    def runMultiplication(areg: Int, breg: Int, resreg: Int, numwords: Int) {
+    def runMultiplication(areg: Int, breg: Int, resreg: Int, numwords: Int,
+            square: Boolean) {
         setRegisterCount(areg, numwords)
         setRegisterCount(breg, numwords)
         setRegisterCount(resreg, numwords)
@@ -291,7 +292,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         poke(c.io.input_select(3), breg)
         poke(c.io.output_select(1), resreg)
         poke(c.io.mult_use_scalar, 0)
-        if (areg == breg) {
+        if (square) {
             poke(c.io.mult_square, 1)
         } else {
             poke(c.io.mult_square, 0)
@@ -360,10 +361,10 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     writeValuesToRegister(1, avalues)
     writeValuesToRegister(2, bvalues)
 
-    runMultiplication(1, 2, 3, 16 / c.lanes)
+    runMultiplication(1, 2, 3, 16 / c.lanes, false)
     checkValuesInRegister(3, multresvalues)
 
-    runMultiplication(1, 1, 3, 16 / c.lanes)
+    runMultiplication(1, 1, 3, 16 / c.lanes, true)
     checkValuesInRegister(3, squareresvalues)
 
     runAddition(1, 2, 3, 16 / c.lanes)
