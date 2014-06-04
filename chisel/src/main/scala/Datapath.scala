@@ -333,6 +333,19 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         expect(c.io.adder_busy, 0)
     }
 
+    def registerMemSet(regnum: Int, value: Float, times: Int) {
+        setRegisterCount(regnum, times / 4)
+        setRegisterValue(regnum, 3, floatToBigInt(value))
+
+        poke(c.io.reg_copy_reset(regnum), 1)
+        step(1)
+        poke(c.io.reg_copy_reset(regnum), 0)
+        step(1)
+        expect(c.io.reg_write_busy(regnum), 1)
+        step(times / 4)
+        expect(c.io.reg_write_busy(regnum), 0)
+    }
+
     poke(c.io.local_init_done, 1)
     poke(c.io.input_select, Array.fill(5){ BigInt(0) })
     poke(c.io.output_select, Array.fill(3){ BigInt(0) })
@@ -355,4 +368,8 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
     runAddition(1, 2, 3, 16 / c.lanes)
     checkValuesInRegister(3, addresvalues)
+
+    val scalar_val = rnd.nextFloat() * 10000.0f - 5000.0f
+    registerMemSet(4, scalar_val, 16)
+    checkValuesInRegister(4, Array.fill(16){ scalar_val })
 }
