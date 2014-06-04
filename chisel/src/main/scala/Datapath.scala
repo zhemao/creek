@@ -207,20 +207,26 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         words
     }
 
-    def writeValuesToRegister(regnum: Int, values: Array[Float]) {
-        val words = floatsToWords(values)
-        val memcount_addr = 2
-        val regcount_addr = (regnum << 2) | memcount_addr
+    def setRegisterValue(regnum: Int, scalar_addr: Int, value: Int) {
+        val full_addr = (regnum << 2) | scalar_addr
 
-        poke(c.io.scalar_address, memcount_addr)
-        poke(c.io.scalar_writedata, words.length)
+        poke(c.io.scalar_address, full_addr)
+        poke(c.io.scalar_writedata, value)
         poke(c.io.scalar_byteenable, 0xf)
         poke(c.io.scalar_write, 1)
         step(1)
-        poke(c.io.scalar_address, regcount_addr)
-        step(1)
         poke(c.io.scalar_write, 0)
         step(1)
+    }
+
+    def setRegisterCount(regnum: Int, count: Int) =
+        setRegisterValue(regnum, 2, count)
+
+    def writeValuesToRegister(regnum: Int, values: Array[Float]) {
+        val words = floatsToWords(values)
+
+        setRegisterCount(0, words.length)
+        setRegisterCount(regnum, words.length)
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
@@ -246,18 +252,9 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
     def checkValuesInRegister(regnum: Int, values: Array[Float]) {
         val words = floatsToWords(values)
-        val memcount_addr = 2
-        val regcount_addr = (regnum << 2) | memcount_addr
 
-        poke(c.io.scalar_address, memcount_addr)
-        poke(c.io.scalar_writedata, words.length)
-        poke(c.io.scalar_byteenable, 0xf)
-        poke(c.io.scalar_write, 1)
-        step(1)
-        poke(c.io.scalar_address, regcount_addr)
-        step(1)
-        poke(c.io.scalar_write, 0)
-        step(1)
+        setRegisterCount(0, words.length)
+        setRegisterCount(regnum, words.length)
 
         expect(c.io.mem_ready, 1)
 
@@ -286,23 +283,9 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     }
 
     def runMultiplication(areg: Int, breg: Int, resreg: Int, numwords: Int) {
-        val count_offset = 2
-        val scalar_shift = 2
-
-        poke(c.io.scalar_address, (areg << scalar_shift) | count_offset)
-        poke(c.io.scalar_writedata, numwords)
-        poke(c.io.scalar_byteenable, 0xf)
-        poke(c.io.scalar_write, 1)
-        step(1)
-
-        poke(c.io.scalar_address, (breg << scalar_shift) | count_offset)
-        step(1)
-
-        poke(c.io.scalar_address, (resreg << scalar_shift) | count_offset)
-        step(1)
-
-        poke(c.io.scalar_write, 0)
-        step(1)
+        setRegisterCount(areg, numwords)
+        setRegisterCount(breg, numwords)
+        setRegisterCount(resreg, numwords)
 
         poke(c.io.input_select(2), areg)
         poke(c.io.input_select(3), breg)
