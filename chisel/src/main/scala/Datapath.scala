@@ -2,7 +2,7 @@ package Creek
 
 import Chisel._
 import ChiselCrossbar._
-import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt}
+import ChiselFloat.FloatUtils.{floatsToBigInt, floatToBigInt, floatAdd}
 import Creek.Constants.FloatSize
 
 class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
@@ -291,7 +291,11 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         poke(c.io.input_select(3), breg)
         poke(c.io.output_select(1), resreg)
         poke(c.io.mult_use_scalar, 0)
-        poke(c.io.mult_square, 0)
+        if (areg == breg) {
+            poke(c.io.mult_square, 1)
+        } else {
+            poke(c.io.mult_square, 0)
+        }
         step(1)
 
         poke(c.io.mult_reset, 1)
@@ -308,6 +312,27 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         expect(c.io.mult_busy, 0)
     }
 
+    def runAddition(areg: Int, breg: Int, resreg: Int, numwords: Int) {
+        poke(c.io.input_select(0), areg)
+        poke(c.io.input_select(1), breg)
+        poke(c.io.output_select(0), resreg)
+        poke(c.io.adder_use_scalar, 0)
+        step(1)
+
+        poke(c.io.adder_reset, 1)
+        step(1)
+        poke(c.io.adder_reset, 0)
+        step(1)
+
+        expect(c.io.adder_busy, 1)
+        expect(c.io.reg_read_busy(areg), 1)
+        expect(c.io.reg_read_busy(breg), 1)
+        step(3)
+        expect(c.io.reg_write_busy(resreg), 1)
+        step(numwords)
+        expect(c.io.adder_busy, 0)
+    }
+
     poke(c.io.local_init_done, 1)
     poke(c.io.input_select, Array.fill(5){ BigInt(0) })
     poke(c.io.output_select, Array.fill(3){ BigInt(0) })
@@ -315,11 +340,19 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
     val avalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
     val bvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
-    val resvalues = (avalues zip bvalues).map { pair => pair._1 * pair._2 }
+    val multresvalues = (avalues zip bvalues).map { pair => pair._1 * pair._2 }
+    val addresvalues = (avalues zip bvalues).map { pair => floatAdd(pair._1, pair._2) }
+    val squareresvalues = avalues.map { a => a * a }
 
     writeValuesToRegister(1, avalues)
     writeValuesToRegister(2, bvalues)
 
     runMultiplication(1, 2, 3, 16 / c.lanes)
-    checkValuesInRegister(3, resvalues)
+    checkValuesInRegister(3, multresvalues)
+
+    runMultiplication(1, 1, 3, 16 / c.lanes)
+    checkValuesInRegister(3, squareresvalues)
+
+    runAddition(1, 2, 3, 16 / c.lanes)
+    checkValuesInRegister(3, addresvalues)
 }
