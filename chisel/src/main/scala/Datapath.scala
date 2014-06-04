@@ -34,6 +34,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
         val adder_reset = Bool(INPUT)
         val adder_busy = Bool(OUTPUT)
         val adder_use_scalar = Bool(INPUT)
+        val adder_subtract = Bool(INPUT)
 
         val mult_reset = Bool(INPUT)
         val mult_busy = Bool(OUTPUT)
@@ -143,6 +144,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     adder.io.reset := io.adder_reset
     io.adder_busy := adder.io.busy
     adder.io.use_scalar := io.adder_use_scalar
+    adder.io.invert_b := io.adder_subtract
     connectArithmeticUnit(adder, 0, 1, 0)
 
     val multiplier = Module(new MultiplierUnit(lanes))
@@ -313,11 +315,17 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         expect(c.io.mult_busy, 0)
     }
 
-    def runAddition(areg: Int, breg: Int, resreg: Int, numwords: Int) {
+    def runAddition(areg: Int, breg: Int, resreg: Int, numwords: Int,
+            subtract: Boolean) {
         poke(c.io.input_select(0), areg)
         poke(c.io.input_select(1), breg)
         poke(c.io.output_select(0), resreg)
         poke(c.io.adder_use_scalar, 0)
+        if (subtract) {
+            poke(c.io.adder_subtract, 1)
+        } else {
+            poke(c.io.adder_subtract, 0)
+        }
         step(1)
 
         poke(c.io.adder_reset, 1)
@@ -356,6 +364,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     val bvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
     val multresvalues = (avalues zip bvalues).map { pair => pair._1 * pair._2 }
     val addresvalues = (avalues zip bvalues).map { pair => floatAdd(pair._1, pair._2) }
+    val subresvalues = (avalues zip bvalues).map { pair => floatAdd(pair._1, -pair._2) }
     val squareresvalues = avalues.map { a => a * a }
 
     writeValuesToRegister(1, avalues)
@@ -367,8 +376,11 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     runMultiplication(1, 1, 3, 16 / c.lanes, true)
     checkValuesInRegister(3, squareresvalues)
 
-    runAddition(1, 2, 3, 16 / c.lanes)
+    runAddition(1, 2, 3, 16 / c.lanes, false)
     checkValuesInRegister(3, addresvalues)
+
+    runAddition(1, 2, 3, 16 / c.lanes, true)
+    checkValuesInRegister(3, subresvalues)
 
     val scalar_val = rnd.nextFloat() * 10000.0f - 5000.0f
     registerMemSet(4, scalar_val, 16)
