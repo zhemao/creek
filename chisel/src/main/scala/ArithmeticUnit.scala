@@ -21,6 +21,7 @@ class ArithmeticUnit(val lanes: Int) extends Module {
 
         val use_scalar = Bool(INPUT)
         val double_a = Bool(INPUT)
+        val invert_b = Bool(INPUT)
 
         val res_vreg_reset = Bool(OUTPUT)
         val res_vreg_data = Bits(OUTPUT, FloatSize * lanes)
@@ -35,8 +36,8 @@ class ArithmeticUnit(val lanes: Int) extends Module {
 
     val scalar_reg = Reg(UInt(width = FloatSize))
     val repeated_scalar = Fill(lanes, scalar_reg)
-    val actual_b_value = Mux(io.use_scalar, repeated_scalar,
-        Mux(io.double_a, io.a_vreg_data, io.b_vreg_data))
+    val actual_a_value = Mux(use_scalar_sync, repeated_scalar, io.a_vreg_data)
+    val actual_b_value = Mux(using_b_sync, io.b_vreg_data, io.a_vreg_data)
 
     when (io.reset) {
         use_scalar_sync := io.use_scalar
