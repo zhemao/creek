@@ -38,6 +38,10 @@ object CreekMain {
                 () => Module(new Datapath(4, 256, 7, 16))) {
                     c => new DatapathTest(c)
                 }
+            case "SwitchController" => chiselMainTest(testArgs,
+                () => Module(new SwitchController(3, 2))) {
+                    c => new SwitchControllerTest(c)
+                }
         }
     }
 }

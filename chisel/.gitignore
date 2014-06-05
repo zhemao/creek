@@ -12,3 +12,4 @@ target/
 /MemoryTest
 /MemoryControllerRegisters
 /Datapath
+/SwitchController
