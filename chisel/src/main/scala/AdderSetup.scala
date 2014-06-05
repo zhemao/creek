@@ -9,4 +9,5 @@ class AdderSetup(lanes: Int, memdepth: Int)
     connectUnit(unit)
 }
 
-class AdderSetupTest(c: AdderSetup) extends ArithmeticSetupTest(c, floatAdd) {}
+class AdderSetupTest(c: AdderSetup)
+    extends ArithmeticSetupTest(c, 5, floatAdd) {}

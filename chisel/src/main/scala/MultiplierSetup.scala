@@ -9,4 +9,4 @@ class MultiplierSetup(lanes: Int, memdepth: Int)
 }
 
 class MultiplierSetupTest(c: MultiplierSetup)
-    extends ArithmeticSetupTest(c, (a, b) => a * b)
+    extends ArithmeticSetupTest(c, 3, (a, b) => a * b)

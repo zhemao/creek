@@ -85,7 +85,8 @@ class ArithmeticSetup(val lanes: Int, val memdepth: Int)
     }
 }
 
-class ArithmeticSetupTest[T <: ArithmeticSetup](c: T, f: (Float, Float) => Float)
+class ArithmeticSetupTest[T <: ArithmeticSetup](
+    c: T, latency: Int, f: (Float, Float) => Float)
         extends Tester(c) {
     def randomFloats(i: Int, n: Int): Seq[Float] = {
         (0 until n).map {
@@ -163,7 +164,7 @@ class ArithmeticSetupTest[T <: ArithmeticSetup](c: T, f: (Float, Float) => Float
     poke(c.io.unit_reset, 0)
     step(1)
     expect(c.io.unit_busy, 1)
-    step(num_values + 3)
+    step(num_values + latency)
     expect(c.io.unit_busy, 0)
 
     poke(c.io.res_read_reset, 1)
