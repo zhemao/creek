@@ -1,5 +1,6 @@
 UNITS = RegisterSet AdderUnit MultiplierUnit AdderSetup MultiplierSetup \
-	MemoryTest MemoryControllerRegisters Datapath SwitchController
+	MemoryTest MemoryControllerRegisters \
+	Datapath SwitchController CreekController
 
 test-all: $(addsuffix .vcd, $(UNITS))
 

@@ -42,6 +42,10 @@ object CreekMain {
                 () => Module(new SwitchController(3, 2))) {
                     c => new SwitchControllerTest(c)
                 }
+            case "CreekController" => chiselMainTest(testArgs,
+                () => Module(new CreekController(256))) {
+                    c => new CreekControllerTest(c)
+                }
         }
     }
 }

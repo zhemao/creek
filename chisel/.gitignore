@@ -13,3 +13,4 @@ target/
 /MemoryControllerRegisters
 /Datapath
 /SwitchController
+/CreekController
