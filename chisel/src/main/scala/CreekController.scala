@@ -12,6 +12,7 @@ class CreekController(instr_depth: Int) extends Module {
     val InstrAddrSize = log2Up(instr_depth)
 
     val io = new Bundle {
+        val local_init_done = Bool(INPUT)
         val instr_address = UInt(OUTPUT, InstrAddrSize)
         val instr_data = UInt(INPUT, InstrWidth)
 
@@ -59,16 +60,16 @@ class CreekController(instr_depth: Int) extends Module {
 
     io.instr_address := pc
 
-    val (instrFetch :: instrDecode ::
+    val (waitInit :: instrFetch :: instrDecode ::
          reqOutputSwitch :: waitOutputSwitch ::
          reqInputSwitch:: waitInputSwitch ::
          waitReg :: writeScalar ::
          startCopy :: startMemRead :: startMemWrite ::
          setAdderB :: setAdderRes :: startAdder ::
          setMultB :: setMultRes :: startMult ::
-         Nil) = Enum(UInt(), 17)
-    val state = Reg(init = instrFetch)
-    val nextstate = Reg(init = instrFetch)
+         Nil) = Enum(UInt(), 18)
+    val state = Reg(init = waitInit)
+    val nextstate = Reg(init = waitInit)
 
     val byteshift = instruction(14, 13)
     val scalar_addr = instruction(12, 8)
@@ -146,6 +147,11 @@ class CreekController(instr_depth: Int) extends Module {
     val WaitOp   = UInt(0xC)
 
     switch (state) {
+        is (waitInit) {
+            when (io.local_init_done) {
+                state := instrFetch
+            }
+        }
         is (instrFetch) {
             instruction := io.instr_data
             pc := pc + UInt(1)
@@ -294,6 +300,9 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     def constructInstr(opcode: Int, reg1: Int, reg2: Int, reg3: Int) =
         1 << 15 | (opcode & 0xf) << 11 | (reg1 & 0x7) << 8 |
         (reg2 & 0x7) << 5 | (reg3 & 0x7) << 2
+
+    poke(c.io.local_init_done, 1)
+    step(1)
 
     // SETS 0 1 32
     poke(c.io.mem_ready, 1)
