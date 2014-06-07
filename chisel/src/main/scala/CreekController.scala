@@ -12,7 +12,7 @@ class CreekController(instr_depth: Int) extends Module {
     val InstrAddrSize = log2Up(instr_depth)
 
     val io = new Bundle {
-        val instr_address = UInt(OUTPUT, log2Up(InstrAddrSize))
+        val instr_address = UInt(OUTPUT, InstrAddrSize)
         val instr_data = UInt(INPUT, InstrWidth)
 
         val input_select = Vec.fill(5) { UInt(OUTPUT, SelectWidth) }
@@ -56,6 +56,8 @@ class CreekController(instr_depth: Int) extends Module {
 
     val pc = Reg(init = UInt(0, InstrAddrSize))
     val instruction = Reg(UInt(width = InstrWidth))
+
+    io.instr_address := pc
 
     val (instrFetch :: instrDecode ::
          reqOutputSwitch :: waitOutputSwitch ::
