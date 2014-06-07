@@ -4,7 +4,7 @@ UNITS = RegisterSet AdderUnit MultiplierUnit AdderSetup MultiplierSetup \
 
 test-all: $(addsuffix .vcd, $(UNITS))
 
-fpga: $(addsuffix .v, $(UNITS))
+fpga: CreekCore.v
 
 %.vcd: src/main/scala/%.scala
 	sbt "run $(notdir $(basename $<)) --debug --genHarness --compile --test --vcd --backend c"
