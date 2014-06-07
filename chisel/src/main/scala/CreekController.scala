@@ -3,10 +3,10 @@ package Creek
 import Chisel._
 import Creek.Constants.FloatSize
 
-class CreekController(instr_depth: Int) extends Module {
-    val NRegs = 8
-    val SelectWidth = log2Up(NRegs)
-    val ScalarAddrSize = log2Up(NRegs) + 2
+class CreekController(instr_depth: Int, nregs: Int) extends Module {
+    val RealNRegs = 8
+    val SelectWidth = log2Up(RealNRegs)
+    val ScalarAddrSize = log2Up(RealNRegs) + 2
     val ScalarWidth = FloatSize
     val InstrWidth = 16
     val InstrAddrSize = log2Up(instr_depth)
@@ -19,9 +19,9 @@ class CreekController(instr_depth: Int) extends Module {
         val input_select = Vec.fill(5) { UInt(OUTPUT, SelectWidth) }
         val output_select = Vec.fill(3) { UInt(OUTPUT, SelectWidth) }
 
-        val reg_read_busy = Vec.fill(NRegs) { Bool(INPUT) }
-        val reg_write_busy = Vec.fill(NRegs) { Bool(INPUT) }
-        val reg_copy_reset = Vec.fill(NRegs) { Bool(OUTPUT) }
+        val reg_read_busy = Vec.fill(RealNRegs) { Bool(INPUT) }
+        val reg_write_busy = Vec.fill(RealNRegs) { Bool(INPUT) }
+        val reg_copy_reset = Vec.fill(RealNRegs) { Bool(OUTPUT) }
 
         val adder_reset = Bool(OUTPUT)
         val adder_busy = Bool(INPUT)
@@ -89,7 +89,7 @@ class CreekController(instr_depth: Int) extends Module {
     val regaddr2 = instruction(7, 5)
     val regaddr3 = instruction(4, 2)
 
-    for (i <- 0 until NRegs) {
+    for (i <- 0 until RealNRegs) {
         io.reg_copy_reset(i) := (state === startCopy) && (regaddr1 === UInt(i))
     }
 
@@ -98,8 +98,8 @@ class CreekController(instr_depth: Int) extends Module {
     io.mem_start_read := (state === startMemRead)
     io.mem_start_write := (state === startMemWrite)
 
-    val input_sw_ctrl = Module(new SwitchController(NRegs, 5))
-    val output_sw_ctrl = Module(new SwitchController(NRegs, 3))
+    val input_sw_ctrl = Module(new SwitchController(RealNRegs, 5))
+    val output_sw_ctrl = Module(new SwitchController(RealNRegs, 3))
 
     io.input_select := input_sw_ctrl.io.select
     io.output_select := output_sw_ctrl.io.select
@@ -122,12 +122,12 @@ class CreekController(instr_depth: Int) extends Module {
     output_sw_ctrl.io.bottom_busy(1) := io.mult_busy
     output_sw_ctrl.io.bottom_busy(2) := !io.mem_ready
 
-    val input_left_sel = Reg(UInt(width = log2Up(NRegs)))
+    val input_left_sel = Reg(UInt(width = log2Up(RealNRegs)))
     val input_bottom_sel = Reg(UInt(width = 3))
     input_sw_ctrl.io.left_sel := input_left_sel
     input_sw_ctrl.io.bottom_sel := input_bottom_sel
 
-    val output_left_sel = Reg(UInt(width = log2Up(NRegs)))
+    val output_left_sel = Reg(UInt(width = log2Up(RealNRegs)))
     val output_bottom_sel = Reg(UInt(width = 2))
     output_sw_ctrl.io.left_sel := output_left_sel
     output_sw_ctrl.io.bottom_sel := output_bottom_sel
