@@ -295,6 +295,7 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
         1 << 15 | (opcode & 0xf) << 11 | (reg1 & 0x7) << 8 |
         (reg2 & 0x7) << 5 | (reg3 & 0x7) << 2
 
+    // SETS 0 1 32
     poke(c.io.mem_ready, 1)
     poke(c.io.instr_data, constructSetsInstr(0, 1, 32))
     step(3)
@@ -303,20 +304,24 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     expect(c.io.scalar_byteenable, 1)
     expect(c.io.scalar_write, 1)
 
+    // LOAD 2
     poke(c.io.instr_data, constructInstr(0, 2, 0, 0))
     step(6)
     expect(c.io.output_select(2), 2)
     expect(c.io.mem_start_read, 1)
 
+    // STORE 3
     poke(c.io.instr_data, constructInstr(1, 3, 0, 0))
     step(6)
     expect(c.io.input_select(4), 3)
     expect(c.io.mem_start_write, 1)
 
+    // COPYS 1
     poke(c.io.instr_data, constructInstr(2, 1, 0, 0))
     step(3)
     expect(c.io.reg_copy_reset(1), 1)
 
+    // ADDV 1 2 3
     poke(c.io.instr_data, constructInstr(4, 1, 2, 3))
     step(14)
     expect(c.io.adder_reset, 1)
@@ -326,6 +331,7 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     expect(c.io.input_select(1), 2)
     expect(c.io.output_select(0), 3)
 
+    // ADDS 2 4
     poke(c.io.instr_data, constructInstr(5, 2, 0, 4))
     step(10)
     expect(c.io.adder_reset, 1)
@@ -334,6 +340,7 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     expect(c.io.input_select(0), 2)
     expect(c.io.output_select(0), 4)
 
+    // SUBV 2 3 4
     poke(c.io.instr_data, constructInstr(6, 2, 3, 4))
     step(14)
     expect(c.io.adder_reset, 1)
@@ -343,6 +350,7 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     expect(c.io.input_select(1), 3)
     expect(c.io.output_select(0), 4)
 
+    // SUBS 3 1
     poke(c.io.instr_data, constructInstr(7, 3, 0, 1))
     step(10)
     expect(c.io.adder_reset, 1)
@@ -350,4 +358,45 @@ class CreekControllerTest(c: CreekController) extends Tester(c) {
     expect(c.io.adder_subtract, 1)
     expect(c.io.input_select(0), 3)
     expect(c.io.output_select(0), 1)
+
+    // MULTV 5 3 1
+    poke(c.io.instr_data, constructInstr(8, 5, 3, 1))
+    step(14)
+    expect(c.io.mult_reset, 1)
+    expect(c.io.mult_use_scalar, 0)
+    expect(c.io.mult_square, 0)
+    expect(c.io.input_select(2), 5)
+    expect(c.io.input_select(3), 3)
+    expect(c.io.output_select(1), 1)
+
+    // MULTS 6 2
+    poke(c.io.instr_data, constructInstr(9, 6, 0, 2))
+    step(10)
+    expect(c.io.mult_reset, 1)
+    expect(c.io.mult_use_scalar, 1)
+    expect(c.io.mult_square, 0)
+    expect(c.io.input_select(2), 6)
+    expect(c.io.output_select(1), 2)
+
+    // SQUARE 1 5
+    poke(c.io.instr_data, constructInstr(10, 1, 0, 5))
+    step(10)
+    expect(c.io.mult_reset, 1)
+    expect(c.io.mult_use_scalar, 0)
+    expect(c.io.mult_square, 1)
+    expect(c.io.input_select(2), 1)
+    expect(c.io.output_select(1), 5)
+
+    expect(c.io.instr_address, 11)
+
+    // WAIT 3
+    poke(c.io.instr_data, constructInstr(12, 2, 0, 0))
+    poke(c.io.reg_read_busy(2), 1)
+    step(2)
+    expect(c.io.instr_address, 12)
+    step(4)
+    expect(c.io.instr_address, 12)
+    poke(c.io.reg_read_busy(2), 0)
+    step(3)
+    expect(c.io.instr_address, 13)
 }
