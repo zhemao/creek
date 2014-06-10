@@ -40,15 +40,15 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
     val addr_step = Reg(UInt(width = addrsize))
     val transfers_left = Reg(UInt(width = addrsize))
 
-    val (idle :: ready :: startRegWrite :: startMemRead :: waitMemRead ::
-        checkReadData :: writeReg :: startRegRead :: readReg ::
-        startMemWrite :: waitMemWrite :: checkRegReadContinue ::
-        Nil) = Enum(UInt(), 12)
+    val (idle :: ready ::
+        startRegWrite :: writeReg :: startRegRead :: readReg ::
+        waitMemRead :: checkReadData :: waitMemWrite :: checkRegReadContinue ::
+        Nil) = Enum(UInt(), 10)
 
     val state = Reg(init = idle)
 
-    io.avl_read := (state === startMemRead) || (state === waitMemRead)
-    io.avl_write := (state === waitMemWrite) || (state === startMemWrite)
+    io.avl_read := (state === waitMemRead)
+    io.avl_write := (state === waitMemWrite)
     io.reg_read_reset := (state === startRegRead)
     io.reg_write_reset := (state === startRegWrite)
     io.reg_read := (state === readReg)
@@ -75,9 +75,6 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
             }
         }
         is (startRegWrite) {
-            state := startMemRead
-        }
-        is (startMemRead) {
             state := waitMemRead
         }
         is (waitMemRead) {
@@ -90,15 +87,13 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
                 state := writeReg
                 avl_readdata := io.avl_readdata
                 transfers_left := transfers_left - UInt(1)
-            } .otherwise {
-                state := startMemRead
             }
         }
         is (writeReg) {
             when (transfers_left === UInt(0)) {
                 state := ready
             } .otherwise {
-                state := startMemRead
+                state := waitMemRead
                 avl_address := avl_address + addr_step
             }
         }
@@ -106,11 +101,8 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
             state := readReg
         }
         is (readReg) {
-            state := startMemWrite
-            avl_writedata := io.reg_readdata
-        }
-        is (startMemWrite) {
             state := waitMemWrite
+            avl_writedata := io.reg_readdata
         }
         is (waitMemWrite) {
             when (io.avl_waitrequest_n) {

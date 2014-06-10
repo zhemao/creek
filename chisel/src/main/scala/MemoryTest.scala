@@ -63,13 +63,9 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
         val avl_write = Bool(INPUT)
     }
 
-    val delay = 3
+    val delay = 5
 
-    val delay_counter = Reg(init = UInt(delay, 2))
-
-    io.avl_waitrequest_n := delay_counter === UInt(0)
-
-    io.avl_readdatavalid := Bool(true)
+    val delay_counter = Reg(init = UInt(0, 3))
 
     val readdata = Reg(UInt(width = datawidth))
     io.avl_readdata := readdata
@@ -78,35 +74,36 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
     val (idle :: reading :: writing :: finishing :: Nil) = Enum(UInt(), 4)
     val state = Reg(init = idle)
 
+    val datavalid = Reg(init = Bool(false))
+
+    io.avl_waitrequest_n := (state != finishing)
+    io.avl_readdatavalid := datavalid
+
     switch (state) {
         is(idle) {
+            delay_counter := UInt(delay)
             when (io.avl_read) {
                 state := reading
-                delay_counter := UInt(delay)
             } .elsewhen (io.avl_write) {
                 state := writing
-                delay_counter := UInt(delay)
             }
         }
         is (reading) {
-            when (delay_counter === UInt(0)) {
-                state := finishing
-                readdata := mem(io.avl_address)
-            } .otherwise {
-                delay_counter := delay_counter - UInt(1)
-            }
+            state := finishing
+            readdata := mem(io.avl_address)
+            datavalid := Bool(true)
         }
         is (writing) {
+            state := finishing
+            mem(io.avl_address) := io.avl_writedata
+        }
+        is (finishing) {
+            datavalid := Bool(false)
             when (delay_counter === UInt(0)) {
-                delay_counter := UInt(delay)
-                state := finishing
-                mem(io.avl_address) := io.avl_writedata
+                state := idle
             } .otherwise {
                 delay_counter := delay_counter - UInt(1)
             }
-        }
-        is (finishing) {
-            state := idle
         }
     }
 }

@@ -232,21 +232,24 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
-        poke(c.io.avl_waitrequest_n, 0)
-        poke(c.io.avl_readdatavalid, 1)
+        poke(c.io.avl_waitrequest_n, 1)
+        poke(c.io.avl_readdatavalid, 0)
         poke(c.io.mem_start_read, 1)
         step(1)
         poke(c.io.mem_start_read, 0)
-        step(3)
+        step(2)
 
         for (i <- 0 until words.length) {
             expect(c.io.avl_read, 1)
             expect(c.io.avl_address, i)
             poke(c.io.avl_readdata, words(i))
-            poke(c.io.avl_waitrequest_n, 1)
+            poke(c.io.avl_readdatavalid, 1)
             step(1)
             poke(c.io.avl_waitrequest_n, 0)
-            step(3)
+            poke(c.io.avl_readdatavalid, 0)
+            step(2)
+            poke(c.io.avl_waitrequest_n, 1)
+            step(1)
         }
         expect(c.io.avl_read, 0)
         expect(c.io.mem_ready, 1)
@@ -262,8 +265,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
-        poke(c.io.avl_waitrequest_n, 0)
-        poke(c.io.avl_readdatavalid, 1)
+        poke(c.io.avl_waitrequest_n, 1)
         poke(c.io.mem_start_write, 1)
         step(1)
         poke(c.io.mem_start_write, 0)
@@ -274,10 +276,10 @@ class DatapathTest(c: Datapath) extends Tester(c) {
             expect(c.io.avl_write, 1)
             expect(c.io.avl_address, i)
             expect(c.io.avl_writedata, words(i))
-            poke(c.io.avl_waitrequest_n, 1)
-            step(1)
             poke(c.io.avl_waitrequest_n, 0)
             step(3)
+            poke(c.io.avl_waitrequest_n, 1)
+            step(1)
         }
 
         expect(c.io.avl_write, 0)
