@@ -14,6 +14,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
     val InstrAddrSize = log2Up(instr_depth)
 
     val io = new Bundle {
+        val pause_n = Bool(INPUT)
         val local_init_done = Bool(INPUT)
         val instr_address = UInt(OUTPUT, InstrAddrSize)
         val instr_data = UInt(INPUT, InstrWidth)
@@ -143,9 +144,11 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
             }
         }
         is (instrFetch) {
-            instruction := io.instr_data
-            pc := pc + UInt(1)
-            state := instrDecode
+            when (io.pause_n) {
+                instruction := io.instr_data
+                pc := pc + UInt(1)
+                state := instrDecode
+            }
         }
         is (instrDecode) {
             when (sets) {
@@ -285,6 +288,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
 
 class CreekControllerTest(c: CreekController) extends Tester(c) {
     poke(c.io.local_init_done, 1)
+    poke(c.io.pause_n, 1)
     step(1)
 
     // SETS 0 1 32

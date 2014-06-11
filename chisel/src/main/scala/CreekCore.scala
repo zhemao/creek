@@ -11,6 +11,7 @@ class CreekCore(
     val VectorWidth = FloatSize * lanes
 
     val io = new Bundle {
+        val pause_n = Bool(INPUT)
         val local_init_done = Bool(INPUT)
         val avl_waitrequest_n = Bool(INPUT)
         val avl_address = UInt(OUTPUT, memaddrsize)
@@ -35,6 +36,7 @@ class CreekCore(
     io.avl_write := datapath.io.avl_write
 
     val controller = Module(new CreekController(instr_depth, nregs))
+    controller.io.pause_n := io.pause_n
     controller.io.local_init_done := io.local_init_done
     controller.io.instr_data := io.instr_data
     io.instr_address := controller.io.instr_address
