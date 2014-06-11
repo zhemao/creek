@@ -48,6 +48,10 @@ object CreekMain {
                 }
             case "CreekCore" => chiselMain(testArgs,
                 () => Module(new CreekCore(1024, 4, 256, 7, 26)))
+            case "CreekCoreSetup" => chiselMainTest(testArgs,
+                () => Module(new CreekCoreSetup(128, 4, 16, 7, 8, 4))) {
+                    c => new CreekCoreSetupTest(c)
+                }
         }
     }
 }
