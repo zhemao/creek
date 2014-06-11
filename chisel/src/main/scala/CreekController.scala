@@ -2,6 +2,8 @@ package Creek
 
 import Chisel._
 import Creek.Constants.FloatSize
+import Creek.Opcode._
+import Creek.Instruction._
 
 class CreekController(instr_depth: Int, nregs: Int) extends Module {
     val RealNRegs = 8
@@ -134,18 +136,6 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
 
     val reg_busy = io.reg_read_busy(regaddr1) || io.reg_write_busy(regaddr1)
 
-    val LoadOp   = UInt(0x0)
-    val StoreOp  = UInt(0x1)
-    val CopyOp   = UInt(0x2)
-    val AddvOp   = UInt(0x4)
-    val AddsOp   = UInt(0x5)
-    val SubvOp   = UInt(0x6)
-    val SubsOp   = UInt(0x7)
-    val MultvOp  = UInt(0x8)
-    val MultsOp  = UInt(0x9)
-    val SquareOp = UInt(0xA)
-    val WaitOp   = UInt(0xC)
-
     switch (state) {
         is (waitInit) {
             when (io.local_init_done) {
@@ -162,22 +152,22 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                 state := writeScalar
             } .otherwise {
                 switch (opcode) {
-                    is (LoadOp) {
+                    is (UInt(LOAD)) {
                         output_left_sel := regaddr1
                         output_bottom_sel := UInt(2)
                         state := reqOutputSwitch
                         nextstate := startMemRead
                     }
-                    is (StoreOp) {
+                    is (UInt(STORE)) {
                         input_left_sel := regaddr1
                         input_bottom_sel := UInt(4)
                         state := reqInputSwitch
                         nextstate := startMemWrite
                     }
-                    is (CopyOp) {
+                    is (UInt(COPY)) {
                         state := startCopy
                     }
-                    is (AddvOp) {
+                    is (UInt(ADDV)) {
                         adder_use_scalar := Bool(false)
                         adder_subtract := Bool(false)
                         input_left_sel := regaddr1
@@ -185,7 +175,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setAdderB
                     }
-                    is (AddsOp) {
+                    is (UInt(ADDS)) {
                         adder_use_scalar := Bool(true)
                         adder_subtract := Bool(false)
                         input_left_sel := regaddr1
@@ -193,7 +183,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setAdderRes
                     }
-                    is (SubvOp) {
+                    is (UInt(SUBV)) {
                         adder_use_scalar := Bool(false)
                         adder_subtract := Bool(true)
                         input_left_sel := regaddr1
@@ -201,7 +191,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setAdderB
                     }
-                    is (SubsOp) {
+                    is (UInt(SUBS)) {
                         adder_use_scalar := Bool(true)
                         adder_subtract := Bool(true)
                         input_left_sel := regaddr1
@@ -209,7 +199,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setAdderRes
                     }
-                    is (MultvOp) {
+                    is (UInt(MULTV)) {
                         mult_use_scalar := Bool(false)
                         mult_square := Bool(false)
                         input_left_sel := regaddr1
@@ -217,7 +207,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setMultB
                     }
-                    is (MultsOp) {
+                    is (UInt(MULTS)) {
                         mult_use_scalar := Bool(true)
                         mult_square := Bool(false)
                         input_left_sel := regaddr1
@@ -225,7 +215,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setMultRes
                     }
-                    is (SquareOp) {
+                    is (UInt(SQUARE)) {
                         mult_use_scalar := Bool(false)
                         mult_square := Bool(true)
                         input_left_sel := regaddr1
@@ -233,7 +223,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
                         state := reqInputSwitch
                         nextstate := setMultRes
                     }
-                    is (WaitOp) {
+                    is (UInt(WAIT)) {
                         state := waitReg
                     }
                 }
@@ -294,13 +284,6 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
 }
 
 class CreekControllerTest(c: CreekController) extends Tester(c) {
-    def constructSetsInstr(byte: Int, addr: Int, value: Int) =
-        (byte & 0x3) << 13 | (addr & 0x1f) << 8 | (value & 0xff)
-
-    def constructInstr(opcode: Int, reg1: Int, reg2: Int, reg3: Int) =
-        1 << 15 | (opcode & 0xf) << 11 | (reg1 & 0x7) << 8 |
-        (reg2 & 0x7) << 5 | (reg3 & 0x7) << 2
-
     poke(c.io.local_init_done, 1)
     step(1)
 
