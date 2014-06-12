@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_mm_st_converter.v"
+   type="VERILOG"
+   library="a0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_addr_cmd.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_addr_cmd_wrap.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ddr2_odt_gen.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ddr3_odt_gen.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_lpddr2_addr_cmd.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_odt_gen.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_rdwr_data_tmg.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_arbiter.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_burst_gen.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_cmd_gen.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_csr.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_buffer.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_buffer_manager.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_burst_tracking.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_dataid_manager.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_fifo.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_list.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_rdata_path.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_wdata_path.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_decoder.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_decoder_32_syn.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_decoder_64_syn.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_encoder.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_encoder_32_syn.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_encoder_64_syn.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_ecc_encoder_decoder_wrapper.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_axi_st_converter.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_input_if.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_rank_timer.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_sideband.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_tbp.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_timing_param.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_controller.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_controller_st_top.v"
+   type="VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/alt_mem_if_nextgen_ddr3_controller_core.sv"
+   type="SYSTEM_VERILOG"
+   library="ng0">
+  <include path="fpga_ddr3_sim/fpga_ddr3/alt_mem_ddrx_define.iv" />
+ </file>
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_reset_controller.v"
+   type="VERILOG"
+   library="rst_controller" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_reset_synchronizer.v"
+   type="VERILOG"
+   library="rst_controller" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_reset_controller.sdc"
+   type="SDC"
+   library="rst_controller" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_dmaster_p2b_adapter.v"
+   type="VERILOG"
+   library="p2b_adapter" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_dmaster_b2p_adapter.v"
+   type="VERILOG"
+   library="b2p_adapter" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_packets_to_master.v"
+   type="VERILOG"
+   library="transacto" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_packets_to_bytes.v"
+   type="VERILOG"
+   library="p2b" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_bytes_to_packets.v"
+   type="VERILOG"
+   library="b2p" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_sc_fifo.v"
+   type="VERILOG"
+   library="fifo" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_dmaster_timing_adt.v"
+   type="VERILOG"
+   library="timing_adt" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_jtag_interface.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_jtag_dc_streaming.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_jtag_sld_node.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_jtag_streaming.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_pli_streaming.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_clock_crosser.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_pipeline_base.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_idle_remover.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_st_idle_inserter.v"
+   type="VERILOG"
+   library="jtag_phy_embedded_in_jtag_master" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_slave_translator.sv"
+   type="SYSTEM_VERILOG"
+   library="s0_seq_debug_translator" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_master_translator.sv"
+   type="SYSTEM_VERILOG"
+   library="dmaster_master_translator" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_mem_if_dll_cyclonev.sv"
+   type="SYSTEM_VERILOG"
+   library="dll0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_mem_if_oct_cyclonev.sv"
+   type="SYSTEM_VERILOG"
+   library="oct0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_c0.v"
+   type="VERILOG"
+   library="c0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_dmaster.v"
+   type="VERILOG"
+   library="dmaster" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_software/sequencer.c"
+   type="OTHER"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_software/sequencer.h"
+   type="OTHER"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_software/sequencer_defines.h"
+   type="OTHER"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_make_qsys_seq.tcl"
+   type="OTHER"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_avalon_mm_bridge.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_mem_if_sequencer_cpu_cv_sim_cpu_inst.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_mem_if_sequencer_cpu_cv_sim_cpu_inst_test_bench.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_mem_if_sequencer_mem_no_ifdef_params.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_arbitrator.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_burst_uncompressor.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_master_agent.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_slave_agent.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_merlin_traffic_limiter.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altera_reset_controller.sdc"
+   type="SDC"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_addr_router.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_addr_router_001.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_addr_router_002.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_cmd_xbar_demux.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_cmd_xbar_demux_001.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_cmd_xbar_demux_002.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_cmd_xbar_mux_003.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_cmd_xbar_mux_005.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_id_router.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_id_router_003.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_id_router_005.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_irq_mapper.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_rsp_xbar_demux_003.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_rsp_xbar_demux_005.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_rsp_xbar_mux.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_rsp_xbar_mux_001.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_ac_ROM_no_ifdef_params.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_ac_ROM_reg.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_bitcheck.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_core.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_datamux.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_data_broadcast.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_data_decoder.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_ddr3.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_di_buffer.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_di_buffer_wrap.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_dm_decoder.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_generic.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_inst_ROM_no_ifdef_params.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_inst_ROM_reg.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_jumplogic.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_lfsr12.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_lfsr36.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_lfsr72.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_pattern_fifo.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_ram.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_ram_csr.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_read_datapath.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/rw_manager_write_decoder.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_data_mgr.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_phy_mgr.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_reg_file.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_acv_phase_decode.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_acv_wrapper.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_mgr.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_reg_file.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_siii_phase_decode.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_siii_wrapper.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_sv_phase_decode.v"
+   type="VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/sequencer_scc_sv_wrapper.sv"
+   type="SYSTEM_VERILOG"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_sequencer_mem.hex"
+   type="HEX"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_AC_ROM.hex"
+   type="HEX"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_s0_inst_ROM.hex"
+   type="HEX"
+   library="s0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/afi_mux_ddr3_ddrx.v"
+   type="VERILOG"
+   library="m0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_clock_pair_generator.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_read_valid_selector.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_addr_cmd_datapath.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_reset.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_acv_ldc.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_memphy.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_reset_sync.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_new_io_pads.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_fr_cycle_shifter.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_fr_cycle_extender.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_read_datapath.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_write_datapath.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_core_shadow_registers.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_simple_ddio_out.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_phy_csr.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_iss_probe.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_addr_cmd_pads.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_flop_mem.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_p0_altdqdqs.v"
+   type="VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/altdq_dqs2_acv_cyclonev.sv"
+   type="SYSTEM_VERILOG"
+   library="p0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_pll0.sv"
+   type="SYSTEM_VERILOG"
+   library="pll0" />
+ <file
+   path="fpga_ddr3_sim/fpga_ddr3/fpga_ddr3_0002.v"
+   type="VERILOG"
+   library="fpga_ddr3" />
+ <file path="fpga_ddr3_sim/fpga_ddr3.v" type="VERILOG" />
+ <topLevel name="fpga_ddr3" />
+ <deviceFamily name="cyclonev" />
+ <modelMap controllerPath="fpga_ddr3" modelPath="fpga_ddr3" />
+</simPackage>
