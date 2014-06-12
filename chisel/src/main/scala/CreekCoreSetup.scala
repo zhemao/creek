@@ -4,7 +4,7 @@ import Chisel._
 import Creek.Constants.FloatSize
 import Creek.Opcode._
 import Creek.Instruction.{constructSetsSequence, constructInstr}
-import ChiselFloat.FloatUtils.floatsToBigInt
+import ChiselFloat.FloatUtils.{floatsToBigInt, floatAdd}
 
 class CreekCoreSetup(
         instr_depth: Int, lanes: Int,
@@ -57,19 +57,26 @@ class CreekCoreSetup(
         Array(constructInstr(LOAD, 1, 0, 0)) ++      // 8
         // set starting mem addr to testsize
         constructSetsSequence(0, 0, testsize) ++     // 9 - 12
-        // set reg 2 and reg 3 count to testsize
+        // set reg 2 count to testsize
         constructSetsSequence(2, 2, testsize) ++     // 13 - 16
-        constructSetsSequence(3, 2, testsize) ++     // 17 - 20
         // load from mem starting at testsize into reg 2
-        Array(constructInstr(LOAD, 2, 0, 0),         // 21
-              constructInstr(WAIT, 2, 0, 0),         // 22
-              // multiply reg 1 by reg 2 and place answer in reg 3
-              constructInstr(MULTV, 1, 2, 3)) ++     // 23
+        Array(constructInstr(LOAD, 2, 0, 0),         // 17
+              constructInstr(WAIT, 1, 0, 0),         // 18
+              constructInstr(WAIT, 2, 0, 0),         // 19
+              // multiply reg 1 by reg 2 and place answer back in reg 1
+              constructInstr(MULTV, 1, 2, 1)) ++     // 20
         // set mem start address to 2 * testsize
-        constructSetsSequence(0, 0, 2 * testsize) ++ // 24 - 27
-        // store addition result to memory
-        Array(constructInstr(STORE, 3, 0, 0),        // 28
-              constructInstr(WAIT, 3, 0, 0))         // 29
+        constructSetsSequence(0, 0, 2 * testsize) ++ // 21 - 24
+        // load from memory starting at 2 * testsize to reg 2
+        Array(constructInstr(LOAD, 2, 0, 0),         // 25
+              constructInstr(WAIT, 2, 0, 0),         // 26
+              // add reg 1 (mult result) by reg 2, storing back in reg 2
+              constructInstr(ADDV, 1, 2, 2)) ++      // 27
+        constructSetsSequence(0, 0, 3 * testsize) ++ // 28 - 31
+              // store addition results
+        Array(constructInstr(STORE, 2, 0, 0),        // 32
+              constructInstr(WAIT, 2, 0, 0),         // 33
+              constructInstr(WAIT, 0, 0, 0))         // 34
 
     val instr_rom = Vec.fill(instr_depth) { UInt(width = 16) }
     for (i <- 0 until instructions.length) {
@@ -124,22 +131,27 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
 
     val avalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
     val bvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
-    val resvalues = (avalues zip bvalues).map { pair => pair._1 * pair._2 }
+    val cvalues = Array.fill(16){ rnd.nextFloat() * 10000.0f - 5000.0f }
+    val resvalues = (avalues zip bvalues zip cvalues).map {
+        case ((a, b), c) => floatAdd(a * b, c)
+    }
     val awords = floatsToWords(avalues, 4)
     val bwords = floatsToWords(bvalues, 4)
+    val cwords = floatsToWords(cvalues, 4)
     val reswords = floatsToWords(resvalues, 4)
 
     for (i <- 0 until 4) {
         writeValue(i, awords(i))
         writeValue(4 + i, bwords(i))
+        writeValue(8 + i, cwords(i))
     }
 
     poke(c.io.pause_n, 1)
-    step(300)
+    step(400)
     poke(c.io.pause_n, 0)
     step(1)
 
     for (i <- 0 until 4) {
-        checkValue(8 + i, reswords(i))
+        checkValue(12 + i, reswords(i))
     }
 }
