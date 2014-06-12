@@ -70,8 +70,8 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     in_switch.io.fw_left(0) := Bits(0)
     out_switch.io.fw_left(0) := Bits(0)
 
-    io.reg_read_busy := Bool(false)
-    io.reg_write_busy := Bool(false)
+    io.reg_read_busy(0) := Bool(true)
+    io.reg_write_busy(0) := Bool(true)
 
     // The user-accessible registers start from 1
     // Register 0 is reserved for the zero vector register
