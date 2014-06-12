@@ -5,7 +5,7 @@ import Chisel._
 class MemoryController(addrsize: Int, datawidth: Int) extends Module {
     val io = new Bundle {
         val local_init_done = Bool(INPUT)
-        val avl_waitrequest_n = Bool(INPUT)
+        val avl_ready = Bool(INPUT)
         val avl_address = UInt(OUTPUT, addrsize)
         val avl_readdatavalid = Bool(INPUT)
         val avl_readdata = UInt(INPUT, datawidth)
@@ -78,7 +78,7 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
             state := waitMemRead
         }
         is (waitMemRead) {
-            when (io.avl_waitrequest_n) {
+            when (io.avl_ready) {
                 state := checkReadData
             }
         }
@@ -105,7 +105,7 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
             avl_writedata := io.reg_readdata
         }
         is (waitMemWrite) {
-            when (io.avl_waitrequest_n) {
+            when (io.avl_ready) {
                 transfers_left := transfers_left - UInt(1)
                 state := checkRegReadContinue
             }

@@ -4,7 +4,7 @@ import Chisel._
 
 class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
     val io = new Bundle {
-        val avl_waitrequest_n = Bool(OUTPUT)
+        val avl_ready = Bool(OUTPUT)
         val avl_address = UInt(INPUT, addrsize)
         val avl_readdatavalid = Bool(OUTPUT)
         val avl_readdata = UInt(OUTPUT, datawidth)
@@ -26,7 +26,7 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
 
     val datavalid = Reg(init = Bool(false))
 
-    io.avl_waitrequest_n := (state != finishing)
+    io.avl_ready := (state != finishing)
     io.avl_readdatavalid := datavalid
 
     switch (state) {

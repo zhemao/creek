@@ -67,7 +67,7 @@ class MemoryTest extends Module {
     val memctrl = Module(new MemoryController(AddrSize, DataWidth))
 
     memctrl.io.local_init_done := io.local_init_done
-    memctrl.io.avl_waitrequest_n := dummymem.io.avl_waitrequest_n
+    memctrl.io.avl_ready := dummymem.io.avl_ready
     dummymem.io.avl_address := memctrl.io.avl_address
     memctrl.io.avl_readdatavalid := dummymem.io.avl_readdatavalid
     memctrl.io.avl_readdata := dummymem.io.avl_readdata

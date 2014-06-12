@@ -16,7 +16,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 
     val io = new Bundle {
         val local_init_done = Bool(INPUT)
-        val avl_waitrequest_n = Bool(INPUT)
+        val avl_ready = Bool(INPUT)
         val avl_address = UInt(OUTPUT, memaddrsize)
         val avl_readdatavalid = Bool(INPUT)
         val avl_readdata = UInt(INPUT, VectorWidth)
@@ -185,7 +185,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     memctrl_reg.io.byteenable := io.scalar_byteenable
 
     memctrl.io.local_init_done := io.local_init_done
-    memctrl.io.avl_waitrequest_n := io.avl_waitrequest_n
+    memctrl.io.avl_ready := io.avl_ready
     memctrl.io.avl_readdatavalid := io.avl_readdatavalid
     memctrl.io.avl_readdata := io.avl_readdata
 
@@ -232,7 +232,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
-        poke(c.io.avl_waitrequest_n, 1)
+        poke(c.io.avl_ready, 1)
         poke(c.io.avl_readdatavalid, 0)
         poke(c.io.mem_start_read, 1)
         step(1)
@@ -245,10 +245,10 @@ class DatapathTest(c: Datapath) extends Tester(c) {
             poke(c.io.avl_readdata, words(i))
             poke(c.io.avl_readdatavalid, 1)
             step(1)
-            poke(c.io.avl_waitrequest_n, 0)
+            poke(c.io.avl_ready, 0)
             poke(c.io.avl_readdatavalid, 0)
             step(2)
-            poke(c.io.avl_waitrequest_n, 1)
+            poke(c.io.avl_ready, 1)
             step(1)
         }
         expect(c.io.avl_read, 0)
@@ -265,7 +265,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
         poke(c.io.input_select(4), regnum)
         poke(c.io.output_select(2), regnum)
-        poke(c.io.avl_waitrequest_n, 1)
+        poke(c.io.avl_ready, 1)
         poke(c.io.mem_start_write, 1)
         step(1)
         poke(c.io.mem_start_write, 0)
@@ -276,9 +276,9 @@ class DatapathTest(c: Datapath) extends Tester(c) {
             expect(c.io.avl_write, 1)
             expect(c.io.avl_address, i)
             expect(c.io.avl_writedata, words(i))
-            poke(c.io.avl_waitrequest_n, 0)
+            poke(c.io.avl_ready, 0)
             step(3)
-            poke(c.io.avl_waitrequest_n, 1)
+            poke(c.io.avl_ready, 1)
             step(1)
         }
 

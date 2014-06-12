@@ -19,7 +19,7 @@ class CreekCoreSetup(
         val mem_readdata = UInt(OUTPUT, VectorWidth)
         val mem_readdatavalid = Bool(OUTPUT)
         val mem_read = Bool(INPUT)
-        val mem_waitrequest_n = Bool(OUTPUT)
+        val mem_ready = Bool(OUTPUT)
         val mem_writedata = UInt(INPUT, VectorWidth)
         val mem_write = Bool(INPUT)
     }
@@ -30,10 +30,10 @@ class CreekCoreSetup(
     core.io.local_init_done := io.local_init_done
 
     val dummymem = Module(new DummyMemory(memaddrsize, FloatSize * lanes))
-    core.io.avl_waitrequest_n := dummymem.io.avl_waitrequest_n
+    core.io.avl_ready := dummymem.io.avl_ready
     core.io.avl_readdatavalid := dummymem.io.avl_readdatavalid
     core.io.avl_readdata := dummymem.io.avl_readdata
-    io.mem_waitrequest_n := dummymem.io.avl_waitrequest_n
+    io.mem_ready := dummymem.io.avl_ready
     io.mem_readdatavalid := dummymem.io.avl_readdatavalid
     io.mem_readdata := dummymem.io.avl_readdata
 
@@ -101,9 +101,9 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
         step(1)
         poke(c.io.mem_write, 0)
         step(2)
-        expect(c.io.mem_waitrequest_n, 0)
+        expect(c.io.mem_ready, 0)
         step(6)
-        expect(c.io.mem_waitrequest_n, 1)
+        expect(c.io.mem_ready, 1)
     }
 
     def checkValue(addr: Int, value: BigInt) {
@@ -114,9 +114,9 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
         step(2)
         expect(c.io.mem_readdatavalid, 1)
         expect(c.io.mem_readdata, value)
-        expect(c.io.mem_waitrequest_n, 0)
+        expect(c.io.mem_ready, 0)
         step(6)
-        expect(c.io.mem_waitrequest_n, 1)
+        expect(c.io.mem_ready, 1)
     }
     
     def floatsToWords(values: Array[Float], lanes: Int) = {

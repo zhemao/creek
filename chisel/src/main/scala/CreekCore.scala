@@ -13,7 +13,7 @@ class CreekCore(
     val io = new Bundle {
         val pause_n = Bool(INPUT)
         val local_init_done = Bool(INPUT)
-        val avl_waitrequest_n = Bool(INPUT)
+        val avl_ready = Bool(INPUT)
         val avl_address = UInt(OUTPUT, memaddrsize)
         val avl_readdatavalid = Bool(INPUT)
         val avl_readdata = UInt(INPUT, VectorWidth)
@@ -27,7 +27,7 @@ class CreekCore(
 
     val datapath = Module(new Datapath(lanes, regdepth, nregs, memaddrsize))
     datapath.io.local_init_done := io.local_init_done
-    datapath.io.avl_waitrequest_n := io.avl_waitrequest_n
+    datapath.io.avl_ready := io.avl_ready
     io.avl_address := datapath.io.avl_address
     datapath.io.avl_readdatavalid := io.avl_readdatavalid
     datapath.io.avl_readdata := io.avl_readdata
