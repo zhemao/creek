@@ -1,3 +1,5 @@
+`define SYNTHESIS
+
 module sockit_top (
     input         OSC_50_B8A,
     input         RESET_n,
@@ -38,20 +40,20 @@ fpga_ddr3 ddr3 (
     .soft_reset_n (RESET_n),
     .afi_clk (afi_clk),
 
-    .mem_a(DDR3_A),             
-    .mem_ba(DDR3_BA),            
-    .mem_ck(DDR3_CK_p),            
-    .mem_ck_n(DDR3_CK_n),          
-    .mem_cke(DDR3_CKE),           
-    .mem_cs_n(DDR3_CS_n),          
-    .mem_dm(DDR3_DM),            
-    .mem_ras_n(DDR3_RAS_n),         
-    .mem_cas_n(DDR3_CAS_n),         
-    .mem_we_n(DDR3_WE_n),          
-    .mem_reset_n(DDR3_RESET_n),       
-    .mem_dq(DDR3_DQ),            
-    .mem_dqs(DDR3_DQS_p),           
-    .mem_dqs_n(DDR3_DQS_n),         
+    .mem_a(DDR3_A),
+    .mem_ba(DDR3_BA),
+    .mem_ck(DDR3_CK_p),
+    .mem_ck_n(DDR3_CK_n),
+    .mem_cke(DDR3_CKE),
+    .mem_cs_n(DDR3_CS_n),
+    .mem_dm(DDR3_DM),
+    .mem_ras_n(DDR3_RAS_n),
+    .mem_cas_n(DDR3_CAS_n),
+    .mem_we_n(DDR3_WE_n),
+    .mem_reset_n(DDR3_RESET_n),
+    .mem_dq(DDR3_DQ),
+    .mem_dqs(DDR3_DQS_p),
+    .mem_dqs_n(DDR3_DQS_n),
     .mem_odt(DDR3_ODT),
     .oct_rzqin(DDR3_RZQ),
 
@@ -68,7 +70,7 @@ fpga_ddr3 ddr3 (
     .local_init_done (local_init_done)
 );
 
-wire [9:0]  instr_readaddr;
+/*wire [9:0]  instr_readaddr;
 wire [15:0] instr_readdata;
 
 wire [9:0]  instr_writeaddr;
@@ -86,8 +88,6 @@ instr_mem im (
 
 wire pause_n = 1'b1;
 
-`define SYNTHESIS
-
 CreekCore core (
     .clk (OSC_50_B8A),
     .reset (!RESET_n),
@@ -102,6 +102,6 @@ CreekCore core (
     .io_avl_write (avl_write),
     .io_instr_address (instr_readaddr),
     .io_instr_data (instr_readdata)
-);
+);*/
 
 endmodule
