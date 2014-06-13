@@ -1,6 +1,6 @@
 `define SYNTHESIS
 
-module sockit_top (
+module creek_sockit (
     input         OSC_50_B8A,
     input         RESET_n,
 
@@ -70,7 +70,7 @@ fpga_ddr3 ddr3 (
     .local_init_done (local_init_done)
 );
 
-/*wire [9:0]  instr_readaddr;
+wire [9:0]  instr_readaddr;
 wire [15:0] instr_readdata;
 
 wire [9:0]  instr_writeaddr;
@@ -102,6 +102,6 @@ CreekCore core (
     .io_avl_write (avl_write),
     .io_instr_address (instr_readaddr),
     .io_instr_data (instr_readdata)
-);*/
+);
 
 endmodule
