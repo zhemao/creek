@@ -15,6 +15,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     val VectorWidth = FloatSize * lanes
 
     val io = new Bundle {
+        val resume = Bool(INPUT)
         val local_init_done = Bool(INPUT)
         val avl_ready = Bool(INPUT)
         val avl_address = UInt(OUTPUT, memaddrsize)
@@ -70,8 +71,8 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
     in_switch.io.fw_left(0) := Bits(0)
     out_switch.io.fw_left(0) := Bits(0)
 
-    io.reg_read_busy(0) := Bool(true)
-    io.reg_write_busy(0) := Bool(true)
+    io.reg_read_busy(0) := !io.resume
+    io.reg_write_busy(0) := !io.resume
 
     // The user-accessible registers start from 1
     // Register 0 is reserved for the zero vector register
@@ -358,6 +359,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
     }
 
     poke(c.io.local_init_done, 1)
+    poke(c.io.resume, 0)
     poke(c.io.input_select, Array.fill(5){ BigInt(0) })
     poke(c.io.output_select, Array.fill(3){ BigInt(0) })
     step(1)

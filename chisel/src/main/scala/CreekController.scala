@@ -16,6 +16,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
     val io = new Bundle {
         val pause_n = Bool(INPUT)
         val local_init_done = Bool(INPUT)
+        val waiting = Bool(OUTPUT)
         val instr_address = UInt(OUTPUT, InstrAddrSize)
         val instr_data = UInt(INPUT, InstrWidth)
 
@@ -91,6 +92,8 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
     val regaddr1 = instruction(10, 8)
     val regaddr2 = instruction(7, 5)
     val regaddr3 = instruction(4, 2)
+
+    io.waiting := (state === waitReg) && (regaddr1 === UInt(0))
 
     for (i <- 0 until RealNRegs) {
         io.reg_copy_reset(i) := (state === startCopy) && (regaddr1 === UInt(i))
