@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<pin_planner>
+	<pin_info>
+		<pin name="DDR3_CK_n" direction="Output" source="Hierarchy Database" diff_pair_node="DDR3_CK_p" >
+		</pin>
+		<pin name="DDR3_CK_p" direction="Output" source="Hierarchy Database" diff_pair_node="DDR3_CK_n" >
+		</pin>
+		<pin name="DDR3_DQS_n[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="DDR3_DQS_p[0]" >
+		</pin>
+		<pin name="DDR3_DQS_p[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="DDR3_DQS_n[0]" >
+		</pin>
+	</pin_info>
+	<buses>
+	</buses>
+	<group_file_association>
+	</group_file_association>
+	<pin_planner_file_specifies>
+	</pin_planner_file_specifies>
+</pin_planner>

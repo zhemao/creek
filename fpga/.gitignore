@@ -26,3 +26,10 @@ hps_sdram_p0_summary.csv
 synthesis
 
 greybox_tmp
+*_all_pins.txt
+
+*.bsf
+*.sopcinfo
+*.cmp
+*.html
+*.lck
