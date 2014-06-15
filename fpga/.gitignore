@@ -33,3 +33,5 @@ greybox_tmp
 *.cmp
 *.html
 *.lck
+*.csv
+PLLJ_PLLSPE_INFO.txt
