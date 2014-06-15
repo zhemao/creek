@@ -1,0 +1,6 @@
+*.elf
+*.map
+*.o
+*.d
+*.a
+*.objdump
