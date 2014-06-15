@@ -28,6 +28,14 @@
          type = "String";
       }
    }
+   element creek_ctrl_adapter_0.avl
+   {
+      datum baseAddress
+      {
+         value = "1073879048";
+         type = "String";
+      }
+   }
    element instr_mem_adapter_0.avl
    {
       datum baseAddress
@@ -41,14 +49,6 @@
       datum baseAddress
       {
          value = "0";
-         type = "String";
-      }
-   }
-   element creek_ctrl_adapter_0.avl
-   {
-      datum baseAddress
-      {
-         value = "1073879048";
          type = "String";
       }
    }
@@ -607,7 +607,7 @@
   <parameter name="tightlyCoupledInstructionMaster2AddrWidth" value="1" />
   <parameter name="tightlyCoupledInstructionMaster3AddrWidth" value="1" />
   <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x40000000' end='0x4001F400' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40021000' end='0x40021800' /></address-map>]]></parameter>
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='mem_if_ddr3_emif_0.avl' start='0x0' end='0x40000000' /><slave name='instr_mem_adapter_0.avl' start='0x40020800' end='0x40021000' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40021000' end='0x40021800' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x40021800' end='0x40021808' /><slave name='creek_ctrl_adapter_0.avl' start='0x40021808' end='0x40021809' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='mem_if_ddr3_emif_0.avl' start='0x0' end='0x40000000' /><slave name='onchip_memory2_0.s1' start='0x40000000' end='0x4001F400' /><slave name='instr_mem_adapter_0.avl' start='0x40020800' end='0x40021000' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40021000' end='0x40021800' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x40021800' end='0x40021808' /><slave name='creek_ctrl_adapter_0.avl' start='0x40021808' end='0x40021809' /></address-map>]]></parameter>
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="deviceFamilyName" value="Cyclone V" />
   <parameter name="internalIrqMaskSystemInfo" value="1" />
@@ -774,11 +774,6 @@
    version="13.1"
    start="clk_0.clk_reset"
    end="mem_if_ddr3_emif_0.global_reset" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_0.clk_reset"
-   end="mem_if_ddr3_emif_0.soft_reset" />
  <connection kind="clock" version="13.1" start="clk_0.clk" end="nios2_qsys_0.clk" />
  <connection
    kind="reset"
@@ -846,6 +841,20 @@
    version="13.1"
    start="nios2_qsys_0.jtag_debug_module_reset"
    end="creek_ctrl_adapter_0.reset" />
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="nios2_qsys_0.data_master"
+   end="onchip_memory2_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x40000000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="reset"
+   version="13.1"
+   start="nios2_qsys_0.jtag_debug_module_reset"
+   end="mem_if_ddr3_emif_0.soft_reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
