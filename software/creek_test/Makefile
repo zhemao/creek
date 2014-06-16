@@ -151,7 +151,9 @@ ASM_SRCS :=
 # using those SRC_DIR variables.
 SRC_DIR_01 := $(call adjust-path,.)
 
+SDIR_C_SRCS += $(SRC_DIR_01)/creek.c
 SDIR_C_SRCS += $(SRC_DIR_01)/creek_test.c
+SDIR_C_SRCS += $(SRC_DIR_01)/instructions.c
 SDIR_CXX_SRCS :=
 SDIR_ASM_SRCS :=
 
