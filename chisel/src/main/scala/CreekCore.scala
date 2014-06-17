@@ -25,6 +25,10 @@ class CreekCore(
 
         val instr_address = UInt(OUTPUT, log2Up(instr_depth))
         val instr_data = UInt(INPUT, 16)
+
+        val cur_pc = UInt(OUTPUT)
+        val cur_instr = UInt(OUTPUT)
+        val cur_state = UInt(OUTPUT)
     }
 
     val datapath = Module(new Datapath(lanes, regdepth, nregs, memaddrsize))
@@ -44,6 +48,9 @@ class CreekCore(
     controller.io.instr_data := io.instr_data
     io.instr_address := controller.io.instr_address
     io.waiting := controller.io.waiting
+    io.cur_pc := controller.io.cur_pc
+    io.cur_instr := controller.io.cur_instr
+    io.cur_state := controller.io.cur_state
 
     datapath.io.input_select := controller.io.input_select
     datapath.io.output_select := controller.io.output_select

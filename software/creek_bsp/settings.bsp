@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 16, 2014 7:10:20 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1402971020940</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 16, 2014 9:01:42 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1402977702623</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/zhehao/programs/creek/software/creek_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../fpga/nios_system.sopcinfo</SopcDesignFile>
@@ -881,20 +881,20 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>instrumentation_adapter_0</slaveDescriptor>
+                <addressRange>0x40041800 - 0x40041807</addressRange>
+                <addressSpan>8</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x40041800 - 0x4004181F</addressRange>
+                <addressRange>0x40041808 - 0x40041827</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>instrumentation_adapter_0</slaveDescriptor>
-                <addressRange>0x40041808 - 0x4004180B</addressRange>
-                <addressSpan>4</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>creek_ctrl_adapter_0</slaveDescriptor>
-                <addressRange>0x4004180C - 0x4004180C</addressRange>
+                <addressRange>0x40041810 - 0x40041810</addressRange>
                 <addressSpan>1</addressSpan>
                 <attributes/>
         </MemoryMap>

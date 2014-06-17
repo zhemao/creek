@@ -47,6 +47,10 @@ wire resume;
 wire waiting;
 wire local_init_done;
 
+wire [15:0] cur_instr;
+wire [9:0]  cur_pc;
+wire [4:0]  cur_state;
+
 nios_system nios (
     .clk_clk (main_clk),
     .reset_reset_n (RESET_n),
@@ -81,10 +85,14 @@ nios_system nios (
     .core_instr_data (instr_readdata),
     .core_resume (resume),
     .core_waiting (waiting),
+    .core_cur_pc (cur_pc),
+    .core_cur_instr (cur_instr),
+    .core_cur_state (cur_state),
     .status_local_init_done (local_init_done),
 
-    .instrumentation_instr (instr_readdata),
-    .instrumentation_pc (instr_readaddr)
+    .instrumentation_instr (cur_instr),
+    .instrumentation_pc (cur_pc),
+    .instrumentation_state (cur_state)
 );
 
 endmodule

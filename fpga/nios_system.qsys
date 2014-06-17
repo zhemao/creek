@@ -16,7 +16,7 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "8";
          type = "int";
       }
    }
@@ -24,23 +24,7 @@
    {
       datum baseAddress
       {
-         value = "1074010112";
-         type = "String";
-      }
-   }
-   element instrumentation_adapter_0.avl
-   {
-      datum baseAddress
-      {
          value = "1074010120";
-         type = "String";
-      }
-   }
-   element instr_mem_adapter_0.avl
-   {
-      datum baseAddress
-      {
-         value = "1074006016";
          type = "String";
       }
    }
@@ -52,11 +36,27 @@
          type = "String";
       }
    }
+   element instrumentation_adapter_0.avl
+   {
+      datum baseAddress
+      {
+         value = "1074010112";
+         type = "String";
+      }
+   }
+   element instr_mem_adapter_0.avl
+   {
+      datum baseAddress
+      {
+         value = "1074006016";
+         type = "String";
+      }
+   }
    element creek_ctrl_adapter_0.avl
    {
       datum baseAddress
       {
-         value = "1074010124";
+         value = "1074010128";
          type = "String";
       }
    }
@@ -88,7 +88,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "7";
          type = "int";
       }
    }
@@ -128,7 +128,7 @@
    {
       datum _sortIndex
       {
-         value = "7";
+         value = "6";
          type = "int";
       }
    }
@@ -187,13 +187,13 @@
    type="conduit"
    dir="end" />
  <interface
-   name="core"
-   internal="CreekCore_0.conduit_end"
+   name="instrumentation"
+   internal="instrumentation_adapter_0.conduit_end"
    type="conduit"
    dir="end" />
  <interface
-   name="instrumentation"
-   internal="instrumentation_adapter_0.conduit_end"
+   name="core"
+   internal="CreekCore_0.conduit_end"
    type="conduit"
    dir="end" />
  <module kind="clock_source" version="13.1" enabled="1" name="clk_0">
@@ -628,7 +628,7 @@
   <parameter name="tightlyCoupledInstructionMaster2AddrWidth" value="1" />
   <parameter name="tightlyCoupledInstructionMaster3AddrWidth" value="1" />
   <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x40020000' end='0x4003F400' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40041000' end='0x40041800' /></address-map>]]></parameter>
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='mem_if_ddr3_emif_0.avl' start='0x0' end='0x40000000' /><slave name='onchip_memory2_0.s1' start='0x40020000' end='0x4003F400' /><slave name='instr_mem_adapter_0.avl' start='0x40040800' end='0x40041000' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40041000' end='0x40041800' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x40041800' end='0x40041808' /><slave name='instrumentation_adapter_0.avl' start='0x40041808' end='0x4004180C' /><slave name='creek_ctrl_adapter_0.avl' start='0x4004180C' end='0x4004180D' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='mem_if_ddr3_emif_0.avl' start='0x0' end='0x40000000' /><slave name='onchip_memory2_0.s1' start='0x40020000' end='0x4003F400' /><slave name='instr_mem_adapter_0.avl' start='0x40040800' end='0x40041000' /><slave name='nios2_qsys_0.jtag_debug_module' start='0x40041000' end='0x40041800' /><slave name='instrumentation_adapter_0.avl' start='0x40041800' end='0x40041808' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x40041808' end='0x40041810' /><slave name='creek_ctrl_adapter_0.avl' start='0x40041810' end='0x40041811' /></address-map>]]></parameter>
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="deviceFamilyName" value="Cyclone V" />
   <parameter name="internalIrqMaskSystemInfo" value="1" />
@@ -675,9 +675,6 @@
    name="instr_mem_adapter_0">
   <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
  </module>
- <module kind="CreekCore" version="1.0" enabled="1" name="CreekCore_0">
-  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
- </module>
  <module
    kind="altera_avalon_onchip_memory2"
    version="13.1"
@@ -710,6 +707,7 @@
    version="1.0"
    enabled="1"
    name="instrumentation_adapter_0" />
+ <module kind="CreekCore" version="1.0" enabled="1" name="CreekCore_0" />
  <connection
    kind="avalon"
    version="13.1"
@@ -749,7 +747,7 @@
    start="nios2_qsys_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x40041800" />
+  <parameter name="baseAddress" value="0x40041808" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -758,7 +756,7 @@
    start="nios2_qsys_0.data_master"
    end="creek_ctrl_adapter_0.avl">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x4004180c" />
+  <parameter name="baseAddress" value="0x40041810" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -814,21 +812,6 @@
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
-   kind="avalon"
-   version="13.1"
-   start="CreekCore_0.avalon_master"
-   end="mem_if_ddr3_emif_0.avl">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection kind="clock" version="13.1" start="clk_0.clk" end="CreekCore_0.clock" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_0.clk_reset"
-   end="CreekCore_0.reset" />
- <connection
    kind="clock"
    version="13.1"
    start="clk_0.clk"
@@ -852,11 +835,6 @@
    version="13.1"
    start="nios2_qsys_0.jtag_debug_module_reset"
    end="onchip_memory2_0.reset1" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="nios2_qsys_0.jtag_debug_module_reset"
-   end="CreekCore_0.reset" />
  <connection
    kind="reset"
    version="13.1"
@@ -889,6 +867,11 @@
  <connection
    kind="reset"
    version="13.1"
+   start="clk_0.clk_reset"
+   end="instrumentation_adapter_0.reset" />
+ <connection
+   kind="reset"
+   version="13.1"
    start="nios2_qsys_0.jtag_debug_module_reset"
    end="instrumentation_adapter_0.reset" />
  <connection
@@ -897,7 +880,27 @@
    start="nios2_qsys_0.data_master"
    end="instrumentation_adapter_0.avl">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x40041808" />
+  <parameter name="baseAddress" value="0x40041800" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="13.1" start="clk_0.clk" end="CreekCore_0.clock" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_0.clk_reset"
+   end="CreekCore_0.reset" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="nios2_qsys_0.jtag_debug_module_reset"
+   end="CreekCore_0.reset" />
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="CreekCore_0.avalon_master"
+   end="mem_if_ddr3_emif_0.avl">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />

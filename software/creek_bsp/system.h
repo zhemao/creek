@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_qsys_0' in SOPC Builder design 'nios_system'
  * SOPC Builder design path: ../../fpga/nios_system.sopcinfo
  *
- * Generated: Mon Jun 16 19:10:21 PDT 2014
+ * Generated: Mon Jun 16 21:01:43 PDT 2014
  */
 
 /*
@@ -148,19 +148,19 @@
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
 #define ALT_STDERR "/dev/jtag_uart_0"
-#define ALT_STDERR_BASE 0x40041800
+#define ALT_STDERR_BASE 0x40041808
 #define ALT_STDERR_DEV jtag_uart_0
 #define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
 #define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDIN "/dev/jtag_uart_0"
-#define ALT_STDIN_BASE 0x40041800
+#define ALT_STDIN_BASE 0x40041808
 #define ALT_STDIN_DEV jtag_uart_0
 #define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
 #define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDOUT "/dev/jtag_uart_0"
-#define ALT_STDOUT_BASE 0x40041800
+#define ALT_STDOUT_BASE 0x40041808
 #define ALT_STDOUT_DEV jtag_uart_0
 #define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
@@ -174,7 +174,7 @@
  */
 
 #define ALT_MODULE_CLASS_creek_ctrl_adapter_0 creek_ctrl_adapter
-#define CREEK_CTRL_ADAPTER_0_BASE 0x4004180c
+#define CREEK_CTRL_ADAPTER_0_BASE 0x40041810
 #define CREEK_CTRL_ADAPTER_0_IRQ -1
 #define CREEK_CTRL_ADAPTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define CREEK_CTRL_ADAPTER_0_NAME "/dev/creek_ctrl_adapter_0"
@@ -212,11 +212,11 @@
  */
 
 #define ALT_MODULE_CLASS_instrumentation_adapter_0 instrumentation_adapter
-#define INSTRUMENTATION_ADAPTER_0_BASE 0x40041808
+#define INSTRUMENTATION_ADAPTER_0_BASE 0x40041800
 #define INSTRUMENTATION_ADAPTER_0_IRQ -1
 #define INSTRUMENTATION_ADAPTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define INSTRUMENTATION_ADAPTER_0_NAME "/dev/instrumentation_adapter_0"
-#define INSTRUMENTATION_ADAPTER_0_SPAN 4
+#define INSTRUMENTATION_ADAPTER_0_SPAN 8
 #define INSTRUMENTATION_ADAPTER_0_TYPE "instrumentation_adapter"
 
 
@@ -226,7 +226,7 @@
  */
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
-#define JTAG_UART_0_BASE 0x40041800
+#define JTAG_UART_0_BASE 0x40041808
 #define JTAG_UART_0_IRQ 0
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"

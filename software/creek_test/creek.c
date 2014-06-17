@@ -9,6 +9,7 @@ static volatile uint16_t *instr_mem = (uint16_t *) INSTR_MEM_ADAPTER_0_BASE;
 static volatile uint8_t *creek_ctrl = (uint8_t *) CREEK_CTRL_ADAPTER_0_BASE;
 static volatile uint16_t *cur_instr = (uint16_t *) INSTRUMENTATION_ADAPTER_0_BASE;
 static volatile uint16_t *cur_pc = (uint16_t *) (INSTRUMENTATION_ADAPTER_0_BASE + 2);
+static volatile uint16_t *cur_state = (uint16_t *) (INSTRUMENTATION_ADAPTER_0_BASE + 4);
 
 uint32_t creek_len(uint32_t size)
 {
@@ -101,6 +102,7 @@ void creek_run_and_sync(struct creek *creek)
 						*cur_pc,
 						creek->instr_num);
 				printf("Current instr: %x\n", *cur_instr);
+				printf("Current state: %d\n", *cur_state);
 			}
 			loop_ctr = 100;
 			printf("resume: %d\n", resume);

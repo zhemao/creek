@@ -45,6 +45,10 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
         val scalar_writedata = UInt(OUTPUT, ScalarWidth)
         val scalar_byteenable = UInt(OUTPUT, ScalarWidth / 8)
         val scalar_write = Bool(OUTPUT)
+
+        val cur_pc = UInt(OUTPUT)
+        val cur_instr = UInt(OUTPUT)
+        val cur_state = UInt(OUTPUT)
     }
 
     val adder_use_scalar = Reg(Bool())
@@ -74,6 +78,8 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
          Nil) = Enum(UInt(), 18)
     val state = Reg(init = waitInit)
     val nextstate = Reg(init = waitInit)
+
+    io.cur_state := state
 
     val byteshift = instruction(14, 13)
     val scalar_addr = instruction(12, 8)
@@ -140,6 +146,12 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
 
     val reg_busy = io.reg_read_busy(regaddr1) || io.reg_write_busy(regaddr1)
 
+    val cur_pc = Reg(UInt(width = InstrAddrSize))
+
+    io.cur_pc := cur_pc
+    io.cur_instr := instruction
+    io.cur_state := state
+
     switch (state) {
         is (waitInit) {
             when (io.local_init_done) {
@@ -150,6 +162,7 @@ class CreekController(instr_depth: Int, nregs: Int) extends Module {
             when (io.pause_n) {
                 instruction := io.instr_data
                 pc := pc + UInt(1)
+                cur_pc := pc
                 state := instrDecode
             }
         }
