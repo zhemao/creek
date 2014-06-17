@@ -7,6 +7,8 @@
 
 static volatile uint16_t *instr_mem = (uint16_t *) INSTR_MEM_ADAPTER_0_BASE;
 static volatile uint8_t *creek_ctrl = (uint8_t *) CREEK_CTRL_ADAPTER_0_BASE;
+static volatile uint16_t *cur_instr = (uint16_t *) INSTRUMENTATION_ADAPTER_0_BASE;
+static volatile uint16_t *cur_pc = (uint16_t *) (INSTRUMENTATION_ADAPTER_0_BASE + 2);
 
 uint32_t creek_len(uint32_t size)
 {
@@ -80,18 +82,32 @@ void creek_store_reg(struct creek *creek,
 
 void creek_run_and_sync(struct creek *creek)
 {
-	uint8_t ctrl_val;
-
-	printf("%x\n", *creek_ctrl);
+	uint8_t waiting;
+	uint8_t pause_n;
+	uint8_t resume;
+	int loop_ctr = 0;
 
 	creek_write_instr(creek, wait_instr(0));
 	*creek_ctrl |= (1 << CREEK_CTRL_PAUSE_N);
 	*creek_ctrl |= (1 << CREEK_CTRL_RESUME);
-	*creek_ctrl &= ~(1 << CREEK_CTRL_RESUME);
 
 	do {
-		ctrl_val = *creek_ctrl;
-	} while (!((ctrl_val >> CREEK_CTRL_WAITING) & 1));
+		pause_n = (*creek_ctrl >> CREEK_CTRL_PAUSE_N) & 0x1;
+		resume = (*creek_ctrl >> CREEK_CTRL_RESUME) & 0x1;
+		waiting = (*creek_ctrl >> CREEK_CTRL_WAITING) & 0x1;
+		if (loop_ctr == 0) {
+			if (pause_n) {
+				printf("Current pc: %d / %d\n",
+						*cur_pc,
+						creek->instr_num);
+				printf("Current instr: %x\n", *cur_instr);
+			}
+			loop_ctr = 100;
+			printf("resume: %d\n", resume);
+			printf("pause: %d\n", !pause_n);
+		}
+		loop_ctr--;
+	} while (!waiting);
 
 	*creek_ctrl &= ~(1 << CREEK_CTRL_PAUSE_N);
 }

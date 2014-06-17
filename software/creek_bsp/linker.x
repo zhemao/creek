@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_qsys_0' in SOPC Builder design 'nios_system'
  * SOPC Builder design path: ../../fpga/nios_system.sopcinfo
  *
- * Generated: Sat Jun 14 13:51:07 PDT 2014
+ * Generated: Mon Jun 16 19:10:21 PDT 2014
  */
 
 /*
@@ -51,13 +51,13 @@
 MEMORY
 {
     mem_if_ddr3_emif_0 : ORIGIN = 0x0, LENGTH = 1073741824
-    reset : ORIGIN = 0x40000000, LENGTH = 32
-    onchip_memory2_0 : ORIGIN = 0x40000020, LENGTH = 127968
+    reset : ORIGIN = 0x40020000, LENGTH = 32
+    onchip_memory2_0 : ORIGIN = 0x40020020, LENGTH = 127968
 }
 
 /* Define symbols for each memory base-address */
 __alt_mem_mem_if_ddr3_emif_0 = 0x0;
-__alt_mem_onchip_memory2_0 = 0x40000000;
+__alt_mem_onchip_memory2_0 = 0x40020000;
 
 OUTPUT_FORMAT( "elf32-littlenios2",
                "elf32-littlenios2",

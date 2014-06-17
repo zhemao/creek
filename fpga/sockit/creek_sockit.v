@@ -81,7 +81,10 @@ nios_system nios (
     .core_instr_data (instr_readdata),
     .core_resume (resume),
     .core_waiting (waiting),
-    .status_local_init_done (local_init_done)
+    .status_local_init_done (local_init_done),
+
+    .instrumentation_instr (instr_readdata),
+    .instrumentation_pc (instr_readaddr)
 );
 
 endmodule

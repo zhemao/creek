@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_qsys_0' in SOPC Builder design 'nios_system'
  * SOPC Builder design path: ../../fpga/nios_system.sopcinfo
  *
- * Generated: Sat Jun 14 13:51:07 PDT 2014
+ * Generated: Mon Jun 16 19:10:21 PDT 2014
  */
 
 /*
@@ -62,7 +62,7 @@
 
 #define ALT_CPU_ARCHITECTURE "altera_nios2_qsys"
 #define ALT_CPU_BIG_ENDIAN 0
-#define ALT_CPU_BREAK_ADDR 0x40021020
+#define ALT_CPU_BREAK_ADDR 0x40041020
 #define ALT_CPU_CPU_FREQ 50000000u
 #define ALT_CPU_CPU_ID_SIZE 1
 #define ALT_CPU_CPU_ID_VALUE 0x00000000
@@ -71,7 +71,7 @@
 #define ALT_CPU_DCACHE_LINE_SIZE 0
 #define ALT_CPU_DCACHE_LINE_SIZE_LOG2 0
 #define ALT_CPU_DCACHE_SIZE 0
-#define ALT_CPU_EXCEPTION_ADDR 0x40000020
+#define ALT_CPU_EXCEPTION_ADDR 0x40020020
 #define ALT_CPU_FLUSHDA_SUPPORTED
 #define ALT_CPU_FREQ 50000000
 #define ALT_CPU_HARDWARE_DIVIDE_PRESENT 0
@@ -85,7 +85,7 @@
 #define ALT_CPU_ICACHE_SIZE 0
 #define ALT_CPU_INST_ADDR_WIDTH 0x1f
 #define ALT_CPU_NAME "nios2_qsys_0"
-#define ALT_CPU_RESET_ADDR 0x40000000
+#define ALT_CPU_RESET_ADDR 0x40020000
 
 
 /*
@@ -94,7 +94,7 @@
  */
 
 #define NIOS2_BIG_ENDIAN 0
-#define NIOS2_BREAK_ADDR 0x40021020
+#define NIOS2_BREAK_ADDR 0x40041020
 #define NIOS2_CPU_FREQ 50000000u
 #define NIOS2_CPU_ID_SIZE 1
 #define NIOS2_CPU_ID_VALUE 0x00000000
@@ -103,7 +103,7 @@
 #define NIOS2_DCACHE_LINE_SIZE 0
 #define NIOS2_DCACHE_LINE_SIZE_LOG2 0
 #define NIOS2_DCACHE_SIZE 0
-#define NIOS2_EXCEPTION_ADDR 0x40000020
+#define NIOS2_EXCEPTION_ADDR 0x40020020
 #define NIOS2_FLUSHDA_SUPPORTED
 #define NIOS2_HARDWARE_DIVIDE_PRESENT 0
 #define NIOS2_HARDWARE_MULTIPLY_PRESENT 0
@@ -115,7 +115,7 @@
 #define NIOS2_ICACHE_LINE_SIZE_LOG2 0
 #define NIOS2_ICACHE_SIZE 0
 #define NIOS2_INST_ADDR_WIDTH 0x1f
-#define NIOS2_RESET_ADDR 0x40000000
+#define NIOS2_RESET_ADDR 0x40020000
 
 
 /*
@@ -128,6 +128,7 @@
 #define __ALTERA_MEM_IF_DDR3_EMIF
 #define __ALTERA_NIOS2_QSYS
 #define __CREEK_CTRL_ADAPTER
+#define __INSTRUMENTATION_ADAPTER
 #define __INSTR_MEM_ADAPTER
 
 
@@ -147,19 +148,19 @@
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
 #define ALT_STDERR "/dev/jtag_uart_0"
-#define ALT_STDERR_BASE 0x40021800
+#define ALT_STDERR_BASE 0x40041800
 #define ALT_STDERR_DEV jtag_uart_0
 #define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
 #define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDIN "/dev/jtag_uart_0"
-#define ALT_STDIN_BASE 0x40021800
+#define ALT_STDIN_BASE 0x40041800
 #define ALT_STDIN_DEV jtag_uart_0
 #define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
 #define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDOUT "/dev/jtag_uart_0"
-#define ALT_STDOUT_BASE 0x40021800
+#define ALT_STDOUT_BASE 0x40041800
 #define ALT_STDOUT_DEV jtag_uart_0
 #define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
@@ -173,7 +174,7 @@
  */
 
 #define ALT_MODULE_CLASS_creek_ctrl_adapter_0 creek_ctrl_adapter
-#define CREEK_CTRL_ADAPTER_0_BASE 0x40021808
+#define CREEK_CTRL_ADAPTER_0_BASE 0x4004180c
 #define CREEK_CTRL_ADAPTER_0_IRQ -1
 #define CREEK_CTRL_ADAPTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define CREEK_CTRL_ADAPTER_0_NAME "/dev/creek_ctrl_adapter_0"
@@ -197,7 +198,7 @@
  */
 
 #define ALT_MODULE_CLASS_instr_mem_adapter_0 instr_mem_adapter
-#define INSTR_MEM_ADAPTER_0_BASE 0x40020800
+#define INSTR_MEM_ADAPTER_0_BASE 0x40040800
 #define INSTR_MEM_ADAPTER_0_IRQ -1
 #define INSTR_MEM_ADAPTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define INSTR_MEM_ADAPTER_0_NAME "/dev/instr_mem_adapter_0"
@@ -206,12 +207,26 @@
 
 
 /*
+ * instrumentation_adapter_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_instrumentation_adapter_0 instrumentation_adapter
+#define INSTRUMENTATION_ADAPTER_0_BASE 0x40041808
+#define INSTRUMENTATION_ADAPTER_0_IRQ -1
+#define INSTRUMENTATION_ADAPTER_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define INSTRUMENTATION_ADAPTER_0_NAME "/dev/instrumentation_adapter_0"
+#define INSTRUMENTATION_ADAPTER_0_SPAN 4
+#define INSTRUMENTATION_ADAPTER_0_TYPE "instrumentation_adapter"
+
+
+/*
  * jtag_uart_0 configuration
  *
  */
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
-#define JTAG_UART_0_BASE 0x40021800
+#define JTAG_UART_0_BASE 0x40041800
 #define JTAG_UART_0_IRQ 0
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"
@@ -245,7 +260,7 @@
 #define ALT_MODULE_CLASS_onchip_memory2_0 altera_avalon_onchip_memory2
 #define ONCHIP_MEMORY2_0_ALLOW_IN_SYSTEM_MEMORY_CONTENT_EDITOR 0
 #define ONCHIP_MEMORY2_0_ALLOW_MRAM_SIM_CONTENTS_ONLY_FILE 0
-#define ONCHIP_MEMORY2_0_BASE 0x40000000
+#define ONCHIP_MEMORY2_0_BASE 0x40020000
 #define ONCHIP_MEMORY2_0_CONTENTS_INFO ""
 #define ONCHIP_MEMORY2_0_DUAL_PORT 0
 #define ONCHIP_MEMORY2_0_GUI_RAM_BLOCK_TYPE "AUTO"

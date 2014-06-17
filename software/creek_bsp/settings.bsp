@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 15, 2014 3:29:23 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1402871363946</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jun 16, 2014 7:10:20 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1402971020940</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/zhehao/programs/creek/software/creek_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../fpga/nios_system.sopcinfo</SopcDesignFile>
@@ -870,25 +870,31 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x40000000 - 0x4001F3FF</addressRange>
+                <addressRange>0x40020000 - 0x4003F3FF</addressRange>
                 <addressSpan>128000</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>instr_mem_adapter_0</slaveDescriptor>
-                <addressRange>0x40020800 - 0x40020FFF</addressRange>
+                <addressRange>0x40040800 - 0x40040FFF</addressRange>
                 <addressSpan>2048</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x40021800 - 0x4002181F</addressRange>
+                <addressRange>0x40041800 - 0x4004181F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>instrumentation_adapter_0</slaveDescriptor>
+                <addressRange>0x40041808 - 0x4004180B</addressRange>
+                <addressSpan>4</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>creek_ctrl_adapter_0</slaveDescriptor>
-                <addressRange>0x40021808 - 0x40021808</addressRange>
+                <addressRange>0x4004180C - 0x4004180C</addressRange>
                 <addressSpan>1</addressSpan>
                 <attributes/>
         </MemoryMap>

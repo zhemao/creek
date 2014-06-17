@@ -22,6 +22,8 @@ always @(posedge clk) begin
         resume <= avl_writedata[1];
     end else if (avl_read) begin
         avl_readdata <= {5'd0, waiting, resume, pause_n};
+    end else begin
+        resume <= 1'b0;
     end
 end
 

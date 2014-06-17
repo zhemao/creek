@@ -155,7 +155,7 @@ ACDS_VERSION := 13.1
 SIM_OPTIMIZE ?= 0
 
 # The CPU reset address as needed by elf2flash
-RESET_ADDRESS ?= 0x40000000
+RESET_ADDRESS ?= 0x40020000
 
 #-------------------------------------
 # Pre-Initialized Memory Descriptions
@@ -183,8 +183,8 @@ DAT_FILES += $(HDL_SIM_DIR)/$(MEM_1).dat
 HDL_SIM_INSTALL_FILES += $(HDL_SIM_INSTALL_DIR)/$(MEM_1).dat
 SYM_FILES += $(HDL_SIM_DIR)/$(MEM_1).sym
 HDL_SIM_INSTALL_FILES += $(HDL_SIM_INSTALL_DIR)/$(MEM_1).sym
-$(MEM_1)_START := 0x40000000
-$(MEM_1)_END := 0x4001f3ff
+$(MEM_1)_START := 0x40020000
+$(MEM_1)_END := 0x4003f3ff
 $(MEM_1)_HIERARCHICAL_PATH := onchip_memory2_0
 $(MEM_1)_WIDTH := 32
 $(MEM_1)_ENDIANNESS := --little-endian-mem

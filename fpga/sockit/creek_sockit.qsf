@@ -416,6 +416,7 @@ set_global_assignment -name ECO_REGENERATE_REPORT ON
 set_global_assignment -name SDC_FILE creek_sockit.sdc
 set_global_assignment -name VERILOG_FILE creek_sockit.v
 set_global_assignment -name VERILOG_FILE ../../chisel/CreekCore.v
+set_global_assignment -name VERILOG_FILE ../adapters/instrumentation_adapter.v
 set_global_assignment -name VERILOG_FILE ../adapters/instr_mem_adapter.v
 set_global_assignment -name VERILOG_FILE ../adapters/creek_ctrl_adapter.v
 set_global_assignment -name QIP_FILE ../nios_system/synthesis/nios_system.qip
