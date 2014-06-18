@@ -18,10 +18,10 @@ class SwitchController(nleft: Int, nbottom: Int) extends Module {
         val bottom_busy = Vec.fill(nbottom){ Bool(INPUT) }
     }
 
-    val select_reg = Vec.fill(nbottom) { Reg(UInt(width = LeftWidth)) }
+    val select_reg = Vec.fill(nbottom) { Reg(init = UInt(0, LeftWidth)) }
     // we have to reserve 0 here as a sentinel value meaning unassigned
     // so we +1 going in and -1 coming out
-    val reverse_reg = Vec.fill(nleft) { Reg(UInt(width = BottomWidth)) }
+    val reverse_reg = Vec.fill(nleft) { Reg(init = UInt(0, BottomWidth)) }
 
     val left_reg = Reg(UInt(width = LeftWidth))
     val bottom_reg = Reg(UInt(width = BottomWidth))
