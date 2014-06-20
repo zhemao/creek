@@ -20,6 +20,20 @@ int main()
 	creek_init(creek);
 
 	creek_load_reg(creek, 1, avalues, 4);
+	creek_write_instr(creek, wait_instr(1));
+	creek_store_reg(creek, 1, results, 4);
+	creek_run_and_sync(creek);
+
+	for (i = 0; i < 4; i++) {
+		memcpy(&expbits, &avalues[i], sizeof(float));
+		memcpy(&resbits, &results[i], sizeof(float));
+		if (expbits != resbits) {
+			printf("Error, expected %f but got %f\n",
+					avalues[i], results[i]);
+		}
+	}
+
+	/*creek_load_reg(creek, 1, avalues, 4);
 	creek_load_reg(creek, 2, bvalues, 4);
 	creek_write_instr(creek, wait_instr(1));
 	creek_write_instr(creek, wait_instr(2));
@@ -37,7 +51,9 @@ int main()
 			printf("Error, expected %f but got %f\n",
 					expected[i], results[i]);
 		}
-	}
+	}*/
+
+	printf("Program finished\n");
 
 	return 0;
 }
