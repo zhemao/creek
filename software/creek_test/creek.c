@@ -84,31 +84,24 @@ void creek_store_reg(struct creek *creek,
 void creek_run_and_sync(struct creek *creek)
 {
 	uint8_t waiting;
-	uint8_t pause_n;
-	uint8_t resume;
-	int loop_ctr = 0;
+	uint16_t last_pc;
+
+	last_pc = *cur_pc;
+	printf("Starting pc: %d\n", last_pc);
 
 	creek_write_instr(creek, wait_instr(0));
 	*creek_ctrl |= (1 << CREEK_CTRL_PAUSE_N);
 	*creek_ctrl |= (1 << CREEK_CTRL_RESUME);
 
 	do {
-		pause_n = (*creek_ctrl >> CREEK_CTRL_PAUSE_N) & 0x1;
-		resume = (*creek_ctrl >> CREEK_CTRL_RESUME) & 0x1;
 		waiting = (*creek_ctrl >> CREEK_CTRL_WAITING) & 0x1;
-		if (loop_ctr == 0) {
-			if (pause_n) {
-				printf("Current pc: %d / %d\n",
-						*cur_pc,
-						creek->instr_num);
-				printf("Current instr: %x\n", *cur_instr);
-				printf("Current state: %d\n", *cur_state);
-			}
-			loop_ctr = 100;
-			printf("resume: %d\n", resume);
-			printf("pause: %d\n", !pause_n);
+		if (last_pc != *cur_pc) {
+			last_pc = *cur_pc;
+			printf("Current pc: %d / %d\n", last_pc,
+					creek->instr_num);
+			printf("Current instr: %x\n", *cur_instr);
+			printf("Current state: %d\n", *cur_state);
 		}
-		loop_ctr--;
 	} while (!waiting);
 
 	*creek_ctrl &= ~(1 << CREEK_CTRL_PAUSE_N);
