@@ -21,7 +21,9 @@ module creek_sockit (
     input          DDR3_RZQ,
     output         DDR3_WE_n,
 
-    output [3:0]   LED
+    output [3:0]   LED,
+    input  [3:0]   KEY,
+    input  [3:0]   SW
 );
 
 wire [9:0]  instr_readaddr;
@@ -50,6 +52,8 @@ wire local_init_done;
 wire [15:0] cur_instr;
 wire [9:0]  cur_pc;
 wire [4:0]  cur_state;
+
+assign LED = !KEY;
 
 nios_system nios (
     .clk_clk (main_clk),
