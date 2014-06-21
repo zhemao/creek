@@ -31,7 +31,7 @@ void creek_init(struct creek *creek)
 
 void creek_write_instr(struct creek *creek, uint16_t instr)
 {
-	instr_mem[creek->instr_num] = instr;
+	creek->instructions[creek->instr_num] = instr;
 	creek->instr_num++;
 }
 
@@ -85,11 +85,18 @@ void creek_run_and_sync(struct creek *creek)
 {
 	uint8_t waiting;
 	uint16_t last_pc;
+	int i;
 
 	last_pc = *cur_pc;
 	printf("Starting pc: %d\n", last_pc);
 
 	creek_write_instr(creek, wait_instr(0));
+
+	for (i = 0; i < creek->instr_num; i++) {
+		printf("%d: %04x\n", i, creek->instructions[i]);
+		instr_mem[i] = creek->instructions[i];
+	}
+
 	*creek_ctrl |= (1 << CREEK_CTRL_PAUSE_N);
 	*creek_ctrl |= (1 << CREEK_CTRL_RESUME);
 

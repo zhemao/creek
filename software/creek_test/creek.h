@@ -20,8 +20,11 @@
 #define CREEK_CTRL_RESUME 1
 #define CREEK_CTRL_WAITING 2
 
+#define INSTR_MEM_DEPTH 1024
+
 struct creek {
 	uint16_t instr_num;
+	uint16_t instructions[INSTR_MEM_DEPTH];
 };
 
 uint32_t creek_len(uint32_t size);
