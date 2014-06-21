@@ -40,7 +40,7 @@ void set_scalar_int(struct creek *creek,
 {
 	uint8_t byteval;
 	int i;
-	uint8_t addr = (regnum << REGNUM_SHIFT) || saddr;
+	uint8_t addr = (regnum << REGNUM_SHIFT) | saddr;
 
 	for (i = 0; i < 4; i++) {
 		byteval = (value >> (i * 8)) & 0xff;
