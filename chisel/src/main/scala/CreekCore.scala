@@ -12,7 +12,6 @@ class CreekCore(
 
     val io = new Bundle {
         val pause_n = Bool(INPUT)
-        val resume = Bool(INPUT)
         val waiting = Bool(OUTPUT)
         val local_init_done = Bool(INPUT)
         val avl_ready = Bool(INPUT)
@@ -40,7 +39,6 @@ class CreekCore(
     io.avl_writedata := datapath.io.avl_writedata
     io.avl_read := datapath.io.avl_read
     io.avl_write := datapath.io.avl_write
-    datapath.io.resume := io.resume
 
     val controller = Module(new CreekController(instr_depth, nregs))
     controller.io.pause_n := io.pause_n

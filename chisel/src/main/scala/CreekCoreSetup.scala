@@ -14,7 +14,6 @@ class CreekCoreSetup(
     val io = new Bundle {
         val pause_n = Bool(INPUT)
         val local_init_done = Bool(INPUT)
-        val resume = Bool(INPUT)
         val waiting = Bool(OUTPUT)
 
         val mem_address = UInt(INPUT, memaddrsize)
@@ -30,7 +29,6 @@ class CreekCoreSetup(
         new CreekCore(instr_depth, lanes, regdepth, nregs, memaddrsize))
     core.io.pause_n := io.pause_n
     core.io.local_init_done := io.local_init_done
-    core.io.resume := io.resume
     io.waiting := core.io.waiting
 
     val dummymem = Module(new DummyMemory(memaddrsize, FloatSize * lanes))
@@ -54,34 +52,33 @@ class CreekCoreSetup(
     }
 
     val instructions =
-        Array(constructInstr(WAIT, 0, 0, 0)) ++
         // set mem registers and reg 1 to count testsize
-        constructSetsSequence(0, 2, testsize) ++     // 1 - 4
-        constructSetsSequence(1, 2, testsize) ++     // 5 - 8
+        constructSetsSequence(0, 2, testsize) ++     // 0 - 3
+        constructSetsSequence(1, 2, testsize) ++     // 4 - 7
         // load from mem to reg 1
-        Array(constructInstr(LOAD, 1, 0, 0)) ++      // 9
+        Array(constructInstr(LOAD, 1, 0, 0)) ++      // 8
         // set starting mem addr to testsize
-        constructSetsSequence(0, 0, testsize) ++     // 10 - 13
+        constructSetsSequence(0, 0, testsize) ++     // 9 - 12
         // set reg 2 count to testsize
-        constructSetsSequence(2, 2, testsize) ++     // 14 - 17
+        constructSetsSequence(2, 2, testsize) ++     // 13 - 16
         // load from mem starting at testsize into reg 2
-        Array(constructInstr(LOAD, 2, 0, 0),         // 18
-              constructInstr(WAIT, 1, 0, 0),         // 19
-              constructInstr(WAIT, 2, 0, 0),         // 20
+        Array(constructInstr(LOAD, 2, 0, 0),         // 17
+              constructInstr(WAIT, 1, 0, 0),         // 18
+              constructInstr(WAIT, 2, 0, 0),         // 19
               // multiply reg 1 by reg 2 and place answer back in reg 1
-              constructInstr(MULTV, 1, 2, 1)) ++     // 21
+              constructInstr(MULTV, 1, 2, 1)) ++     // 20
         // set mem start address to 2 * testsize
-        constructSetsSequence(0, 0, 2 * testsize) ++ // 22 - 25
+        constructSetsSequence(0, 0, 2 * testsize) ++ // 21 - 24
         // load from memory starting at 2 * testsize to reg 2
-        Array(constructInstr(LOAD, 2, 0, 0),         // 26
-              constructInstr(WAIT, 2, 0, 0),         // 27
+        Array(constructInstr(LOAD, 2, 0, 0),         // 25
+              constructInstr(WAIT, 2, 0, 0),         // 26
               // add reg 1 (mult result) by reg 2, storing back in reg 2
-              constructInstr(ADDV, 1, 2, 2)) ++      // 28
-        constructSetsSequence(0, 0, 3 * testsize) ++ // 29 - 32
+              constructInstr(ADDV, 1, 2, 2)) ++      // 27
+        constructSetsSequence(0, 0, 3 * testsize) ++ // 28 - 31
               // store addition results
-        Array(constructInstr(STORE, 2, 0, 0),        // 33
-              constructInstr(WAIT, 2, 0, 0),         // 34
-              constructInstr(WAIT, 0, 0, 0))         // 35
+        Array(constructInstr(STORE, 2, 0, 0),        // 32
+              constructInstr(WAIT, 2, 0, 0),         // 33
+              constructInstr(WAIT, 0, 0, 0))         // 34
 
     val instr_rom = Vec.fill(instr_depth) { UInt(width = 16) }
     for (i <- 0 until instructions.length) {
@@ -97,7 +94,6 @@ class CreekCoreSetup(
 class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
     poke(c.io.local_init_done, 1)
     poke(c.io.pause_n, 0)
-    poke(c.io.resume, 0)
     step(1)
 
     def writeValue(addr: Int, value: BigInt) {
@@ -153,15 +149,7 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
     }
 
     poke(c.io.pause_n, 1)
-    step(10)
-    expect(c.io.waiting, 1)
-    poke(c.io.resume, 1)
-    step(1)
-    poke(c.io.resume, 0)
-    step(1)
-    expect(c.io.waiting, 0)
     step(400)
-    expect(c.io.waiting, 1)
     poke(c.io.pause_n, 0)
     step(1)
 
