@@ -8,22 +8,22 @@ module creek_ctrl_adapter (
     output reg [7:0] avl_readdata,
     input            avl_read,
 
-    output reg pause_n,
-    output reg resume,
-    input      waiting
+    output reg creek_pause_n,
+    output reg creek_reset,
+    input      creek_waiting
 );
 
 always @(posedge clk) begin
     if (reset) begin
-        pause_n <= 1'b0;
-        resume <= 1'b0;
+        creek_pause_n <= 1'b0;
+        creek_reset <= 1'b1;
     end else if (avl_write) begin
-        pause_n <= avl_writedata[0];
-        resume <= avl_writedata[1];
+        creek_pause_n <= avl_writedata[0];
+        creek_reset <= avl_writedata[1];
     end else if (avl_read) begin
-        avl_readdata <= {5'd0, waiting, resume, pause_n};
+        avl_readdata <= {5'd0, creek_waiting, creek_reset, creek_pause_n};
     end else begin
-        resume <= 1'b0;
+        creek_reset <= 1'b0;
     end
 end
 
