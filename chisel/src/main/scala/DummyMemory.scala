@@ -14,13 +14,16 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
     }
 
     val delay = 5
+    val addrpad = log2Up(datawidth) - 3
+    val numwords = addrsize - addrpad
 
     val delay_counter = Reg(init = UInt(0, 3))
 
     val readdata = Reg(UInt(width = datawidth))
+    val address = io.avl_address(addrsize - 1, addrpad)
     io.avl_readdata := readdata
 
-    val mem = Mem(UInt(width = datawidth), 1 << addrsize)
+    val mem = Mem(UInt(width = datawidth), 1 << numwords)
     val (idle :: reading :: writing :: finishing :: Nil) = Enum(UInt(), 4)
     val state = Reg(init = idle)
 
@@ -40,12 +43,12 @@ class DummyMemory(addrsize: Int, datawidth: Int)  extends Module {
         }
         is (reading) {
             state := finishing
-            readdata := mem(io.avl_address)
+            readdata := mem(address)
             datavalid := Bool(true)
         }
         is (writing) {
             state := finishing
-            mem(io.avl_address) := io.avl_writedata
+            mem(address) := io.avl_writedata
         }
         is (finishing) {
             datavalid := Bool(false)

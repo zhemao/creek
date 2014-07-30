@@ -96,9 +96,11 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
     poke(c.io.pause_n, 0)
     step(1)
 
+    val addrshift = log2Up(c.VectorWidth) - 3
+
     def writeValue(addr: Int, value: BigInt) {
         poke(c.io.mem_write, 1)
-        poke(c.io.mem_address, addr)
+        poke(c.io.mem_address, addr << addrshift)
         poke(c.io.mem_writedata, value)
         step(1)
         poke(c.io.mem_write, 0)
@@ -110,7 +112,7 @@ class CreekCoreSetupTest(c: CreekCoreSetup) extends Tester(c) {
 
     def checkValue(addr: Int, value: BigInt) {
         poke(c.io.mem_read, 1)
-        poke(c.io.mem_address, addr)
+        poke(c.io.mem_address, addr << addrshift)
         step(1)
         poke(c.io.mem_read, 0)
         step(2)

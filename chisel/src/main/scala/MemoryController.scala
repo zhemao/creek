@@ -29,13 +29,16 @@ class MemoryController(addrsize: Int, datawidth: Int) extends Module {
         val transfer_count = UInt(INPUT, addrsize)
     }
 
-    val avl_address = Reg(UInt(width = addrsize))
+    // log base 2 of number of bytes per word
+    val addrpad = log2Up(datawidth) - 3
+
+    val avl_address = Reg(UInt(width = addrsize - addrpad))
     val avl_writedata = Reg(UInt(width = datawidth))
     val avl_readdata = Reg(UInt(width = datawidth))
 
     io.reg_writedata := avl_readdata
     io.avl_writedata := avl_writedata
-    io.avl_address := avl_address
+    io.avl_address := Cat(avl_address, UInt(0, addrpad))
 
     val addr_step = Reg(UInt(width = addrsize))
     val transfers_left = Reg(UInt(width = addrsize))

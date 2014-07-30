@@ -198,6 +198,7 @@ class Datapath(val lanes: Int, regdepth: Int, val nregs: Int, memaddrsize: Int)
 }
 
 class DatapathTest(c: Datapath) extends Tester(c) {
+    val addrshift = log2Up(c.VectorWidth) - 3
 
     def floatsToWords(values: Array[Float]) = {
         val numwords = values.length / c.lanes
@@ -241,7 +242,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
 
         for (i <- 0 until words.length) {
             expect(c.io.avl_read, 1)
-            expect(c.io.avl_address, i)
+            expect(c.io.avl_address, i << addrshift)
             poke(c.io.avl_readdata, words(i))
             poke(c.io.avl_readdatavalid, 1)
             step(1)
@@ -274,7 +275,7 @@ class DatapathTest(c: Datapath) extends Tester(c) {
         for (i <- 0 until words.length) {
             expect(c.io.mem_ready, 0)
             expect(c.io.avl_write, 1)
-            expect(c.io.avl_address, i)
+            expect(c.io.avl_address, i << addrshift)
             expect(c.io.avl_writedata, words(i))
             poke(c.io.avl_ready, 0)
             step(3)

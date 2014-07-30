@@ -53,7 +53,7 @@ class DummyRegister(numvalues: Int, datawidth: Int) extends Module {
 }
 
 class MemoryTest extends Module {
-    val AddrSize = 4
+    val AddrSize = 8
     val DataWidth = 128
     val NumValues = 4
 
