@@ -1,0 +1,16 @@
+<internal_error>
+	<executable>quartus_fit</executable>
+	<sub_system>MEM</sub_system>
+	<error>*** Fatal Error: Out of memory in module quartus_fit (2699 megabytes used)</error>
+	<date>Thu Jun 19 19:46:58 2014</date>
+	<version>Version 13.1.0 Build 162 10/23/2013 SJ Web Edition</version>
+</internal_error>
+
+<internal_error>
+	<executable>quartus_fit</executable>
+	<sub_system>MEM</sub_system>
+	<error>*** Fatal Error: Out of memory in module quartus_fit (2899 megabytes used)</error>
+	<date>Thu Jun 19 19:51:51 2014</date>
+	<version>Version 13.1.0 Build 162 10/23/2013 SJ Web Edition</version>
+</internal_error>
+
