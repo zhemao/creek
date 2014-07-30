@@ -20,19 +20,11 @@
          type = "int";
       }
    }
-   element instrumentation_adapter_0.avl
-   {
-      datum baseAddress
-      {
-         value = "6144";
-         type = "String";
-      }
-   }
    element instr_mem_adapter_0.avl
    {
       datum baseAddress
       {
-         value = "4096";
+         value = "16384";
          type = "String";
       }
    }
@@ -40,7 +32,15 @@
    {
       datum baseAddress
       {
-         value = "6152";
+         value = "18440";
+         type = "String";
+      }
+   }
+   element instrumentation_adapter_0.avl
+   {
+      datum baseAddress
+      {
+         value = "18432";
          type = "String";
       }
    }
@@ -93,6 +93,14 @@
       }
    }
    element creek_memory.s1
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
+   element creek_memory.s2
    {
       datum baseAddress
       {
@@ -637,11 +645,11 @@
   <parameter name="allowInSystemMemoryContentEditor" value="false" />
   <parameter name="blockType" value="AUTO" />
   <parameter name="dataWidth" value="128" />
-  <parameter name="dualPort" value="false" />
+  <parameter name="dualPort" value="true" />
   <parameter name="initMemContent" value="true" />
   <parameter name="initializationFileName" value="onchip_mem.hex" />
   <parameter name="instanceID" value="NONE" />
-  <parameter name="memorySize" value="4096" />
+  <parameter name="memorySize" value="16384" />
   <parameter name="readDuringWriteMode" value="DONT_CARE" />
   <parameter name="simAllowMRAMContentsFile" value="false" />
   <parameter name="simMemInitOnlyFilename" value="0" />
@@ -698,15 +706,6 @@
  <connection
    kind="avalon"
    version="13.1"
-   start="CreekCore_0.avalon_master"
-   end="creek_memory.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="13.1"
    start="hps_0.h2f_lw_axi_master"
    end="creek_memory.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -719,7 +718,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="instrumentation_adapter_0.avl">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x1800" />
+  <parameter name="baseAddress" value="0x4800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -728,7 +727,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="instr_mem_adapter_0.avl">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x1000" />
+  <parameter name="baseAddress" value="0x4000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -752,7 +751,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="creek_ctrl_adapter_0.avl">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x1808" />
+  <parameter name="baseAddress" value="0x4808" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -760,6 +759,21 @@
    version="13.1"
    start="creek_ctrl_adapter_0.reset_source"
    end="CreekCore_0.reset" />
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="CreekCore_0.avalon_master"
+   end="creek_memory.s2">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="13.1" start="clk_0.clk" end="creek_memory.clk2" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_0.clk_reset"
+   end="creek_memory.reset2" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
