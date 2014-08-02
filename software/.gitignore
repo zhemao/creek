@@ -4,3 +4,4 @@
 *.d
 *.a
 *.objdump
+/creek_test/creek_test

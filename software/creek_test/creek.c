@@ -1,15 +1,15 @@
-#include <system.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 #include "instructions.h"
 #include "creek.h"
-
-static volatile uint16_t *instr_mem = (uint16_t *) INSTR_MEM_ADAPTER_0_BASE;
-static volatile uint8_t *creek_ctrl = (uint8_t *) CREEK_CTRL_ADAPTER_0_BASE;
-static volatile uint16_t *cur_instr = (uint16_t *) INSTRUMENTATION_ADAPTER_0_BASE;
-static volatile uint16_t *cur_pc = (uint16_t *) (INSTRUMENTATION_ADAPTER_0_BASE + 2);
-static volatile uint16_t *cur_state = (uint16_t *) (INSTRUMENTATION_ADAPTER_0_BASE + 4);
 
 uint32_t creek_len(uint32_t size)
 {
@@ -24,9 +24,31 @@ uint32_t creek_addr(uint32_t size)
 	return creek_len(size / 4);
 }
 
-void creek_init(struct creek *creek)
+int creek_init(struct creek *creek)
 {
+	int fd;
+
 	creek->instr_num = 0;
+	creek->last_mem_pos = 0;
+
+	fd = open("/dev/mem", O_RDWR);
+	if (fd < 0)
+		return -1;
+
+	creek->iomem = (volatile void *) mmap(NULL, LWHPS2FPGA_SIZE,
+				PROT_READ | PROT_WRITE, MAP_SHARED,
+				fd, LWHPS2FPGA_BASE);
+	close(fd);
+
+	if (creek->iomem == MAP_FAILED)
+		return -1;
+
+	return 0;
+}
+
+void creek_release(struct creek *creek)
+{
+	munmap((void *) creek->iomem, LWHPS2FPGA_SIZE);
 }
 
 void creek_write_instr(struct creek *creek, uint16_t instr)
@@ -85,7 +107,17 @@ void creek_run_and_sync(struct creek *creek)
 {
 	uint8_t waiting;
 	uint16_t last_pc;
+	volatile uint16_t *instr_mem, *creek_ctrl;
+	volatile uint16_t *cur_instr, *cur_pc, *cur_state;
 	int i;
+
+	instr_mem = (volatile uint16_t *) (creek->iomem + INSTR_MEM_OFFSET);
+	creek_ctrl = (volatile uint16_t *) (creek->iomem + CREEK_CTRL_OFFSET);
+	cur_instr = (volatile uint16_t *) (creek->iomem + CURRENT_INSTR_OFFSET);
+	cur_pc = (volatile uint16_t *) (creek->iomem + CURRENT_PC_OFFSET);
+	cur_state = (volatile uint16_t *) (creek->iomem + CURRENT_STATE_OFFSET);
+
+	*creek_ctrl |= (1 << CREEK_CTRL_RESET);
 
 	last_pc = *cur_pc;
 	printf("Starting pc: %d\n", last_pc);
@@ -93,12 +125,10 @@ void creek_run_and_sync(struct creek *creek)
 	creek_write_instr(creek, wait_instr(0));
 
 	for (i = 0; i < creek->instr_num; i++) {
-		printf("%d: %04x\n", i, creek->instructions[i]);
 		instr_mem[i] = creek->instructions[i];
 	}
 
 	*creek_ctrl |= (1 << CREEK_CTRL_PAUSE_N);
-	*creek_ctrl |= (1 << CREEK_CTRL_RESUME);
 
 	do {
 		waiting = (*creek_ctrl >> CREEK_CTRL_WAITING) & 0x1;
@@ -112,4 +142,18 @@ void creek_run_and_sync(struct creek *creek)
 	} while (!waiting);
 
 	*creek_ctrl &= ~(1 << CREEK_CTRL_PAUSE_N);
+	creek->instr_num = 0;
+}
+
+void *creek_malloc(struct creek *creek, unsigned int size)
+{
+	void *ptr;
+	if (creek->last_mem_pos + size > DATA_MEM_LENGTH) {
+		return NULL;
+	}
+
+	ptr = creek->iomem + creek->last_mem_pos;
+	creek->last_mem_pos += size;
+
+	return ptr;
 }

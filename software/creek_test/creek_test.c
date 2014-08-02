@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include <system.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "creek.h"
 #include "instructions.h"
-#include <string.h>
 
 int main()
 {
@@ -12,17 +12,48 @@ int main()
 	float bvalues[4] = {1.0f, 1.0e-4f, 2.0f, 0.5f};
 	float expected[4] = {1.0f, 2.34e8f, 63.86f, 2.85f};
 	float results[4];
-	int i;
+
+	float *d_avalues, *d_bvalues, *d_results;
+	int i, res;
 
 	uint32_t expbits;
 	uint32_t resbits;
 
-	creek_init(creek);
+	res = creek_init(creek);
+	if (res < 0) {
+		perror("creek_init");
+		return -1;
+	}
 
-	creek_load_reg(creek, 1, avalues, 4);
+	d_avalues = (float *) creek_malloc(creek, sizeof(avalues));
+	if (d_avalues == NULL) {
+		fprintf(stderr, "Too big: %u\n", creek->last_mem_pos);
+		creek_release(creek);
+		exit(EXIT_FAILURE);
+	}
+	d_bvalues = (float *) creek_malloc(creek, sizeof(bvalues));
+	if (d_bvalues == NULL) {
+		fprintf(stderr, "Too big: %u\n", creek->last_mem_pos);
+		creek_release(creek);
+		exit(EXIT_FAILURE);
+	}
+	d_results = (float *) creek_malloc(creek, sizeof(results));
+	if (d_results == NULL) {
+		fprintf(stderr, "Too big: %u\n", creek->last_mem_pos);
+		creek_release(creek);
+		exit(EXIT_FAILURE);
+	}
+
+	memcpy(d_avalues, avalues, sizeof(avalues));
+	memcpy(d_bvalues, bvalues, sizeof(bvalues));
+
+	set_scalar_int(creek, 0, REG_COUNT, 1);
+	creek_load_reg(creek, 1, d_avalues, 4);
 	creek_write_instr(creek, wait_instr(1));
-	creek_store_reg(creek, 1, results, 4);
+	creek_store_reg(creek, 1, d_results, 4);
 	creek_run_and_sync(creek);
+
+	memcpy(results, d_results, sizeof(results));
 
 	for (i = 0; i < 4; i++) {
 		memcpy(&expbits, &avalues[i], sizeof(float));
@@ -52,6 +83,8 @@ int main()
 					expected[i], results[i]);
 		}
 	}*/
+
+	creek_release(creek);
 
 	printf("Program finished\n");
 
