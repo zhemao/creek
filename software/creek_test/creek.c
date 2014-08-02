@@ -79,7 +79,7 @@ void set_scalar_float(struct creek *creek,
 	set_scalar_int(creek, regnum, saddr, ivalue);
 }
 
-static void prep_register(struct creek *creek, int regnum,
+void creek_prep_reg(struct creek *creek, int regnum,
 		uint32_t start, uint32_t count)
 {
 	set_scalar_int(creek, regnum, REG_START, creek_addr(start));
@@ -88,18 +88,20 @@ static void prep_register(struct creek *creek, int regnum,
 }
 
 void creek_load_reg(struct creek *creek,
-		uint8_t regnum, float *values, uint32_t length)
+		uint8_t regnum, void *values, uint32_t length)
 {
-	prep_register(creek, 0, (uint32_t) values, (uint32_t) length);
-	prep_register(creek, regnum, 0, (uint32_t) length);
+	uint32_t load_start = (uint32_t) (values - creek->iomem);
+	creek_prep_reg(creek, 0, load_start, (uint32_t) length);
+	creek_prep_reg(creek, regnum, 0, (uint32_t) length);
 	creek_write_instr(creek, load_instr(regnum));
 }
 
 void creek_store_reg(struct creek *creek,
-		uint8_t regnum, float *values, uint32_t length)
+		uint8_t regnum, void *values, uint32_t length)
 {
-	prep_register(creek, 0, (uint32_t) values, (uint32_t) length);
-	prep_register(creek, regnum, 0, (uint32_t) length);
+	uint32_t store_start = (uint32_t) (values - creek->iomem);
+	creek_prep_reg(creek, 0, store_start, (uint32_t) length);
+	creek_prep_reg(creek, regnum, 0, (uint32_t) length);
 	creek_write_instr(creek, store_instr(regnum));
 }
 
@@ -107,12 +109,12 @@ void creek_run_and_sync(struct creek *creek)
 {
 	uint8_t waiting;
 	uint16_t last_pc;
-	volatile uint16_t *instr_mem, *creek_ctrl;
-	volatile uint16_t *cur_instr, *cur_pc, *cur_state;
+	volatile uint16_t *instr_mem, *cur_instr, *cur_pc, *cur_state;
+	volatile uint8_t *creek_ctrl;
 	int i;
 
 	instr_mem = (volatile uint16_t *) (creek->iomem + INSTR_MEM_OFFSET);
-	creek_ctrl = (volatile uint16_t *) (creek->iomem + CREEK_CTRL_OFFSET);
+	creek_ctrl = (volatile uint8_t *) (creek->iomem + CREEK_CTRL_OFFSET);
 	cur_instr = (volatile uint16_t *) (creek->iomem + CURRENT_INSTR_OFFSET);
 	cur_pc = (volatile uint16_t *) (creek->iomem + CURRENT_PC_OFFSET);
 	cur_state = (volatile uint16_t *) (creek->iomem + CURRENT_STATE_OFFSET);
@@ -145,9 +147,12 @@ void creek_run_and_sync(struct creek *creek)
 	creek->instr_num = 0;
 }
 
-void *creek_malloc(struct creek *creek, unsigned int size)
+volatile void *creek_malloc(struct creek *creek, unsigned int size)
 {
-	void *ptr;
+	volatile void *ptr;
+
+	size = creek_len(size) << CREEK_ADDR_SHIFT;
+
 	if (creek->last_mem_pos + size > DATA_MEM_LENGTH) {
 		return NULL;
 	}

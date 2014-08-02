@@ -39,6 +39,13 @@ struct creek {
 	unsigned int last_mem_pos;
 };
 
+struct lane {
+	float float_a;
+	float float_b;
+	float float_c;
+	float float_d;
+};
+
 uint32_t creek_len(uint32_t size);
 uint32_t creek_addr(uint32_t size);
 
@@ -53,11 +60,14 @@ void set_scalar_float(struct creek *creek,
 		uint8_t regnum, uint8_t saddr, float value);
 
 void creek_load_reg(struct creek *creek,
-		uint8_t regnum, float *values, uint32_t length);
+		uint8_t regnum, void *values, uint32_t length);
 void creek_store_reg(struct creek *creek,
-		uint8_t regnum, float *values, uint32_t length);
+		uint8_t regnum, void *values, uint32_t length);
 void creek_run_and_sync(struct creek *creek);
 
-void *creek_malloc(struct creek *creek, unsigned int size);
+volatile void *creek_malloc(struct creek *creek, unsigned int size);
+
+void creek_prep_reg(struct creek *creek, int regnum,
+		uint32_t start, uint32_t count);
 
 #endif

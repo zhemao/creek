@@ -51,6 +51,7 @@ int main()
 	creek_load_reg(creek, 1, d_avalues, 4);
 	creek_write_instr(creek, wait_instr(1));
 	creek_store_reg(creek, 1, d_results, 4);
+	creek_write_instr(creek, wait_instr(1));
 	creek_run_and_sync(creek);
 
 	memcpy(results, d_results, sizeof(results));
@@ -59,34 +60,36 @@ int main()
 		memcpy(&expbits, &avalues[i], sizeof(float));
 		memcpy(&resbits, &results[i], sizeof(float));
 		if (expbits != resbits) {
-			printf("Error, expected %f but got %f\n",
+			fprintf(stderr, "Error, expected %f but got %f\n",
 					avalues[i], results[i]);
 		}
 	}
 
-	/*creek_load_reg(creek, 1, avalues, 4);
-	creek_load_reg(creek, 2, bvalues, 4);
+	memcpy(d_avalues, avalues, sizeof(avalues));
+	memcpy(d_bvalues, bvalues, sizeof(bvalues));
+
+	creek_load_reg(creek, 1, d_avalues, 4);
+	creek_load_reg(creek, 2, d_bvalues, 4);
 	creek_write_instr(creek, wait_instr(1));
 	creek_write_instr(creek, wait_instr(2));
+	creek_prep_reg(creek, 3, 0, 4);
 	creek_write_instr(creek, multv_instr(1, 2, 3));
-	creek_store_reg(creek, 3, results, 4);
+	creek_store_reg(creek, 3, d_results, 4);
 	creek_write_instr(creek, wait_instr(3));
-
-	printf("Starting co-processor and waiting for it to finish\n");
 	creek_run_and_sync(creek);
+
+	memcpy(results, d_results, sizeof(results));
 
 	for (i = 0; i < 4; i++) {
 		memcpy(&expbits, &expected[i], sizeof(float));
 		memcpy(&resbits, &results[i], sizeof(float));
 		if (expbits != resbits) {
-			printf("Error, expected %f but got %f\n",
+			fprintf(stderr, "Error, expected %f but got %f\n",
 					expected[i], results[i]);
 		}
-	}*/
+	}
 
 	creek_release(creek);
-
-	printf("Program finished\n");
 
 	return 0;
 }
